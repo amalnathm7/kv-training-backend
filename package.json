@@ -6,13 +6,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf dist && npx tsc",
-    "start-server": "npm run build && node dist/app.js"
+    "start-server": "npm run build && node dist/app.js",
+    "migration:generate": "npm run build && npx typeorm migration:generate -d dist/db/postgres.db.js",
+    "migration:run": "npm run build && npx typeorm migration:run -d dist/db/postgres.db.js",
+    "migration:revert": "npm run build && npx typeorm migration:revert -d dist/db/postgres.db.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.17.17",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "express": "^4.18.2",
     "pg": "^8.11.2",
     "reflect-metadata": "^0.1.13",

@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import SnakeNamingStrategy from "typeorm-naming-strategy";
 import { Employee } from "../entity/employee.entity";
+import Address from "../entity/address.entity";
 
 const dataSource = new DataSource({
     type: "postgres",
@@ -9,8 +10,9 @@ const dataSource = new DataSource({
     username: "postgres",
     password: "postgres",
     database: "training",
-    entities: [Employee],
-    logging: true,
+    entities: ["dist/entity/*.js"],
+    migrations: ["dist/db/migrations/*.js"],
+    // logging: true,
     namingStrategy: new SnakeNamingStrategy(),
 });
 

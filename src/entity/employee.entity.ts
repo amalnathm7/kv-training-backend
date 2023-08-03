@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import Address from "./address.entity";
 
 // @Entity('employees') // If table name is something else
 @Entity()
@@ -20,4 +21,7 @@ export class Employee {
 
     @DeleteDateColumn()
     deletedAt: Date;
+
+    @OneToOne(() => Address, (address) => address.employee, { cascade: true })
+    address: Address;
 }
