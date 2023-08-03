@@ -4,15 +4,15 @@ import { Type } from "class-transformer";
 import UpdateAddressDto from "./update-address.dto";
 
 class UpdateEmployeeDto {
-    @ValidateIf(value => value !== undefined)
+    @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
     name: string;
 
-    @ValidateIf(value => value !== undefined)
+    @ValidateIf((obj) => obj.value !== undefined)
     @IsEmail()
     email: string;
 
-    @ValidateIf(value => value !== undefined)
+    @ValidateIf((obj) => obj.value !== undefined)
     @IsObject()
     @ValidateNested({ each: true })
     @Type(() => UpdateAddressDto)
