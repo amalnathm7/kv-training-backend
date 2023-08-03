@@ -2,7 +2,7 @@ import { ValidationError } from "class-validator";
 import HttpException from "./http.exception";
 
 class ValidationException extends HttpException {
-    public errors: any;
+    public errors: Object;
 
     constructor(status: number, message: string, errors: ValidationError[]) {
         super(status, message);
