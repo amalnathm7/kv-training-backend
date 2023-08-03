@@ -1,11 +1,11 @@
 import { IsString, ValidateIf } from "class-validator";
 
 class UpdateAddressDto {
-    @ValidateIf((obj, value) => value !== undefined)
+    @ValidateIf(value => value !== undefined)
     @IsString()
     line1: string;
 
-    @ValidateIf((obj, value) => value !== undefined)
+    @ValidateIf(value => value !== undefined)
     @IsString()
     pincode: string;
 }
