@@ -1,28 +1,37 @@
-import { Column, Entity, Index, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne } from "typeorm";
 import Address from "./address.entity";
-import Department from "./department.entity";
 import { AbstractEntity } from "./abstract.entity";
-import { Role } from "../utils/role.enum";
+import { Status } from "../utils/status.enum";
+import Department from "./department.entity";
+import { Role } from "./role.entity";
 
 @Entity()
 class Employee extends AbstractEntity {
     @Column()
     name: string;
 
-    @Index({ unique: true })
     @Column()
-    email: string;
+    username: string;
 
     @Column()
     password: string
 
+    @Column()
+    joiningDate: string
+
+    @Column()
+    experience: number
+
+    @ManyToOne(() => Department, (department) => department.employees)
+    department: Department;
+
+    @Column()
+    status: Status;
+
     @OneToOne(() => Address, (address) => address.employee, { cascade: true })
     address: Address;
 
-    @ManyToOne(() => Department, (department) => department.employee)
-    department: Department;
-
-    @Column({ default: Role.DEVELOPER })
+    @ManyToOne(() => Role, (role) => role.employees)
     role: Role
 }
 

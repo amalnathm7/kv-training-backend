@@ -1,10 +1,9 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsObject, IsString, ValidateIf, ValidateNested } from "class-validator";
+import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested } from "class-validator";
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
-import { Role } from "../utils/role.enum";
-import Department from "../entity/department.entity";
-import CreateDepartmentDto from "./create-department.dto";
+import { Index } from "typeorm";
+import { Status } from "../utils/status.enum";
 
 class CreateEmployeeDto {
     @IsNotEmpty()
@@ -12,8 +11,25 @@ class CreateEmployeeDto {
     name: string;
 
     @IsNotEmpty()
-    @IsEmail()
-    email: string;
+    @Index({ unique: true })
+    @IsString()
+    username: string;
+
+    @IsNotEmpty()
+    @IsString()
+    password: string
+
+    @IsNotEmpty()
+    @IsDateString()
+    joiningDate: string
+
+    @IsNotEmpty()
+    @IsNumber()
+    experience: number
+
+    @IsNotEmpty()
+    @IsString()
+    departmentId: string;
 
     @IsNotEmpty()
     @IsObject()
@@ -22,16 +38,12 @@ class CreateEmployeeDto {
     address: Address;
 
     @IsNotEmpty()
-    @IsNumber()
-    departmentId: number;
+    @IsEnum(Status)
+    status: Status
 
     @IsNotEmpty()
     @IsString()
-    password: string
-
-    @IsNotEmpty()
-    @IsEnum(Role)
-    role: Role
+    role: string
 }
 
 export default CreateEmployeeDto;

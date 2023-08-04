@@ -4,7 +4,7 @@ import HttpException from "../exception/http.exception";
 import { roleService } from "../route/role.route";
 import { PermissionLevel } from "../utils/permission.level.enum";
 
-const authorize = async (
+const superAuthorize = async (
     req: RequestWithUser,
     res: Response,
     next: NextFunction
@@ -14,7 +14,7 @@ const authorize = async (
 
         const role = await roleService.getRole(roleId);
 
-        if (role.permissionLevel === PermissionLevel.BASIC) {
+        if (role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "FORBIDDEN");
         }
 
@@ -24,4 +24,4 @@ const authorize = async (
     }
 }
 
-export default authorize;
+export default superAuthorize;

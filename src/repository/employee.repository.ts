@@ -9,11 +9,12 @@ class EmployeeRepository {
             relations: {
                 address: true,
                 department: true,
+                role: true
             }
         });
     }
 
-    findEmployeeById(id: number): Promise<Employee> {
+    findEmployeeById(id: string): Promise<Employee> {
         return this.employeeRepository.findOne({
             where: {
                 id: id,
@@ -21,12 +22,13 @@ class EmployeeRepository {
             relations: {
                 address: true,
                 department: true,
+                role: true
             }
         });
     }
 
-    findEmployeeByEmail(email: string): Promise<Employee> {
-        return this.employeeRepository.findOneBy({ email });
+    findEmployeeByUsername(username: string): Promise<Employee> {
+        return this.employeeRepository.findOneBy({ username });
     }
 
     saveEmployee(employee: Employee): Promise<Employee> {

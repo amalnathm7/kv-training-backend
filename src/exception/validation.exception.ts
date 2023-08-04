@@ -5,7 +5,7 @@ class ValidationException extends HttpException {
     public errors: Object;
 
     constructor(errors: ValidationError[]) {
-        super(400, "Validation Errors");
+        super(400, "Validation Errors", "BAD REQUEST");
 
         this.errors = this.generateErrorObject(errors);
     }

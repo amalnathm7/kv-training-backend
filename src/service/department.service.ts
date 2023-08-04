@@ -11,38 +11,29 @@ class DepartmentService {
         return this.departmentRepository.findAllDepartments();
     }
 
-    async getDepartmentById(id: number): Promise<Department | null> {
+    async getDepartmentById(id: string): Promise<Department | null> {
         const department = await this.departmentRepository.findDepartmentById(id);
-
         if (!department) {
-            throw new HttpException(404, "Department not found");
+            throw new HttpException(404, "Department not found", "NOT FOUND");
         }
-
         return department;
     }
 
     createDepartment(createDepartmentDto: CreateDepartmentDto): Promise<Department> {
-        const { name, description } = createDepartmentDto;
+        const name = createDepartmentDto.name;
         const newDepartment = new Department()
-
         newDepartment.name = name;
-        newDepartment.description = description;
-
         return this.departmentRepository.saveDepartment(newDepartment);
     }
 
-    async updateDepartment(id: number, updateDepartmentDto: UpdateDepartmentDto): Promise<void> {
+    async updateDepartment(id: string, updateDepartmentDto: UpdateDepartmentDto): Promise<void> {
         const department = await this.getDepartmentById(id);
-
         department.name = updateDepartmentDto.name;
-        department.description = updateDepartmentDto.description;
-
         this.departmentRepository.saveDepartment(department);
     }
 
-    async deleteDepartment(id: number) {
+    async deleteDepartment(id: string) {
         const department = await this.getDepartmentById(id);
-
         this.departmentRepository.deleteDepartment(department);
     }
 }

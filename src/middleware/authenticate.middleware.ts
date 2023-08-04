@@ -9,7 +9,7 @@ const authenticate = async (req: RequestWithUser, res: Response, next: NextFunct
         const payload: jwtPayload = jwt.verify(token, process.env.JWT_SECRET) as jwtPayload;
         // Inject into req
         req.name = payload.name;
-        req.email = payload.email;
+        req.username = payload.username;
         req.role = payload.role;
         jwt.verify(token, process.env.JWT_SECRET);
         next();

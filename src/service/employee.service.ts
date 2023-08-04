@@ -5,11 +5,12 @@ import Address from "../entity/address.entity";
 import Employee from "../entity/employee.entity";
 import HttpException from "../exception/http.exception";
 import EmployeeRepository from "../repository/employee.repository";
-import bcyrpt from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtPayload } from "../utils/jwt.payload.type";
-import DepartmentService from "./department.service";
 import { departmentService } from "../route/department.route";
+import { Role } from "../entity/role.entity";
+import { roleService } from "../route/role.route";
 
 class EmployeeService {
     constructor(private employeeRepository: EmployeeRepository) { }
@@ -18,64 +19,81 @@ class EmployeeService {
         return this.employeeRepository.findAllEmployees();
     }
 
-    async getEmployeeById(id: number): Promise<Employee | null> {
+    async getEmployeeById(id: string): Promise<Employee | null> {
         const employee = await this.employeeRepository.findEmployeeById(id);
-
         if (!employee) {
-            throw new HttpException(404, "Employee not found");
+            throw new HttpException(404, "Employee not found", "NOT FOUND");
         }
-
         return employee;
     }
 
     async createEmployee(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
-        const { name, email, password, address, role, departmentId } = createEmployeeDto;
+        const { name, username, password, joiningDate, experience, departmentId, address, status } = createEmployeeDto;
+        const roleStr = createEmployeeDto.role;
         const newEmployee = new Employee();
         newEmployee.name = name;
-        newEmployee.email = email;
-        newEmployee.password = await bcyrpt.hash(password, 10);;
+        newEmployee.username = username;
+        newEmployee.password = await bcrypt.hash(password, 10);
+        newEmployee.joiningDate = joiningDate;
+        newEmployee.experience = experience;
+        newEmployee.status = status;
+
+        const role = await roleService.getRole(roleStr);
         newEmployee.role = role;
 
         const department = await departmentService.getDepartmentById(departmentId);
-
         if (!department) {
-            throw new HttpException(404, 'Department not found');
+            throw new HttpException(404, 'Department not found', "NOT FOUND");
         }
-
         newEmployee.department = department;
 
         const newAddress = new Address();
-        newAddress.line1 = address.line1;
+        newAddress.addressLine1 = address.addressLine1;
+        newAddress.addressLine2 = address.addressLine2;
+        newAddress.city = address.city;
+        newAddress.state = address.state;
+        newAddress.country = address.country;
         newAddress.pincode = address.pincode;
-
         newEmployee.address = newAddress;
+
         return this.employeeRepository.saveEmployee(newEmployee);
     }
 
-    async deleteEmployee(id: number): Promise<void> {
+    async deleteEmployee(id: string): Promise<void> {
         const employee = await this.getEmployeeById(id);
 
         this.employeeRepository.deleteEmployee(employee);
     }
 
-    async updateEmployee(id: number, updateEmployeeDto: UpdateEmployeeDto): Promise<void> {
+    async updateEmployee(id: string, updateEmployeeDto: UpdateEmployeeDto): Promise<void> {
         const employee = await this.getEmployeeById(id);
 
         employee.name = updateEmployeeDto.name;
-        employee.email = updateEmployeeDto.email;
+        employee.username = updateEmployeeDto.username;
+        employee.password = await bcrypt.hash(updateEmployeeDto.password, 10);
+        employee.joiningDate = updateEmployeeDto.joiningDate;
+        employee.experience = updateEmployeeDto.experience;
+        employee.status = updateEmployeeDto.status;
+
+        if (updateEmployeeDto.role) {
+            const role = await roleService.getRole(updateEmployeeDto.role);
+            employee.role = role;
+        }
 
         if (updateEmployeeDto.departmentId) {
             const department = await departmentService.getDepartmentById(updateEmployeeDto.departmentId);
-
             if (!department) {
-                throw new HttpException(404, 'Department not found');
+                throw new HttpException(404, 'Department not found', "NOT FOUND");
             }
-
             employee.department = department;
         }
 
         if (updateEmployeeDto.address) {
-            employee.address.line1 = updateEmployeeDto.address.line1;
+            employee.address.addressLine1 = updateEmployeeDto.address.addressLine1;
+            employee.address.addressLine2 = updateEmployeeDto.address.addressLine2;
+            employee.address.city = updateEmployeeDto.address.city;
+            employee.address.state = updateEmployeeDto.address.state;
+            employee.address.country = updateEmployeeDto.address.country;
             employee.address.pincode = updateEmployeeDto.address.pincode;
         }
 
@@ -83,26 +101,22 @@ class EmployeeService {
     }
 
     async loginEmployee(loginEmployeeDto: LoginEmployeeDto) {
-        const employee = await this.employeeRepository.findEmployeeByEmail(loginEmployeeDto.email);
-
+        const employee = await this.employeeRepository.findEmployeeByUsername(loginEmployeeDto.username);
         if (!employee) {
-            throw new HttpException(401, "Incorrect username or password");
+            throw new HttpException(401, "Incorrect username or password", "UNAUTHORIZED");
         }
 
-        const result = await bcyrpt.compare(loginEmployeeDto.password, employee.password);
-
+        const result = await bcrypt.compare(loginEmployeeDto.password, employee.password);
         if (!result) {
-            throw new HttpException(401, "Incorrect username or password");
+            throw new HttpException(401, "Incorrect username or password", "UNAUTHORIZED");
         }
 
         const payload: jwtPayload = {
             name: employee.name,
-            email: employee.email,
-            role: employee.role
+            username: employee.username,
+            role: employee.role.id
         }
-
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
-
         return { token };
     }
 }

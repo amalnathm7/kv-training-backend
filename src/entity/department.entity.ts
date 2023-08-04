@@ -7,11 +7,8 @@ class Department extends AbstractEntity {
     @Column()
     name: string;
 
-    @Column()
-    description: string;
-
     @OneToMany(() => Employee, (employee) => employee.department)
-    employee: Employee;
+    employees: Employee[]
 }
 
 export default Department;

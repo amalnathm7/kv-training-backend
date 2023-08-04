@@ -9,7 +9,7 @@ class DepartmentRepository {
         });
     }
 
-    findDepartmentById(id: number): Promise<Department> {
+    findDepartmentById(id: string): Promise<Department> {
         return this.departmentRepository.findOne({
             where: {
                 id: id,
