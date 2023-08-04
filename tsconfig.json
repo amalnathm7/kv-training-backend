@@ -7,5 +7,6 @@
     "outDir": "dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-  }
+  },
+  "exclude": ["**/*.test.ts"]
 }

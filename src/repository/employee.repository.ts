@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Employee } from "../entity/employee.entity";
+import Employee from "../entity/employee.entity";
 
 class EmployeeRepository {
     constructor(private employeeRepository: Repository<Employee>) { }
@@ -8,19 +8,25 @@ class EmployeeRepository {
         return this.employeeRepository.find({
             relations: {
                 address: true,
+                department: true,
             }
         });
     }
 
-    findOneEmployeeById(id: number): Promise<Employee> {
+    findEmployeeById(id: number): Promise<Employee> {
         return this.employeeRepository.findOne({
             where: {
                 id: id,
             },
             relations: {
                 address: true,
+                department: true,
             }
         });
+    }
+
+    findEmployeeByEmail(email: string): Promise<Employee> {
+        return this.employeeRepository.findOneBy({ email });
     }
 
     saveEmployee(employee: Employee): Promise<Employee> {
