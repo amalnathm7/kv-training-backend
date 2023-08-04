@@ -22,11 +22,11 @@ export class JsonResponseUtil {
     }
 
     static sendJsonResponse201(res: express.Response, data: Object, startTime: Date) {
-        this.sendJsonResponse(200, "CREATED", res, data, startTime);
+        this.sendJsonResponse(201, "CREATED", res, data, startTime);
     }
 
     static sendJsonResponse204(res: express.Response, startTime: Date) {
-        this.sendJsonResponse(200, "NO CONTENT", res, {}, startTime);
+        this.sendJsonResponse(204, "NO CONTENT", res, {}, startTime);
     }
 
     static sendJsonResponse401(res: express.Response, errors: Object) {

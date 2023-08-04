@@ -6,21 +6,22 @@ import { validate } from "class-validator";
 import ValidationException from "../exception/validation.exception";
 import UpdateEmployeeDto from "../dto/update-employee.dto";
 import LoginEmployeeDto from "../dto/login-employee.dto";
+import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
 import authorize from "../middleware/authorize.middleware";
-import { JsonResponseUtil } from "../utils/json.response.util";
+import superAuthorize from "../middleware/super.authorize.middleware";
 
 class EmployeeController {
     public router: express.Router;
 
     constructor(private employeeService: EmployeeService) {
         this.router = express.Router();
-        this.router.post("/", this.createEmployee);
-        this.router.get("/", this.getAllEmployees);
-        this.router.get("/:id", this.getEmployeeById);
-        this.router.put("/:id", this.setEmployee);
-        this.router.patch("/:id", this.updateEmployee);
-        this.router.delete("/:id", this.deleteEmployee);
+        this.router.post("/", authenticate, superAuthorize, this.createEmployee);
+        this.router.get("/", authenticate, authorize, this.getAllEmployees);
+        this.router.get("/:id", authenticate, authorize, this.getEmployeeById);
+        this.router.put("/:id", authenticate, superAuthorize, this.setEmployee);
+        this.router.patch("/:id", authenticate, superAuthorize, this.updateEmployee);
+        this.router.delete("/:id", authenticate, superAuthorize, this.deleteEmployee);
         this.router.post("/login", this.loginEmployee);
     }
 

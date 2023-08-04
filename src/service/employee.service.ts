@@ -9,7 +9,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtPayload } from "../utils/jwt.payload.type";
 import { departmentService } from "../route/department.route";
-import { Role } from "../entity/role.entity";
 import { roleService } from "../route/role.route";
 
 class EmployeeService {
@@ -29,7 +28,7 @@ class EmployeeService {
 
     async createEmployee(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
         const { name, username, password, joiningDate, experience, departmentId, address, status } = createEmployeeDto;
-        const roleStr = createEmployeeDto.role;
+        const roleId = createEmployeeDto.roleId;
         const newEmployee = new Employee();
         newEmployee.name = name;
         newEmployee.username = username;
@@ -38,14 +37,18 @@ class EmployeeService {
         newEmployee.experience = experience;
         newEmployee.status = status;
 
-        const role = await roleService.getRole(roleStr);
-        newEmployee.role = role;
-
-        const department = await departmentService.getDepartmentById(departmentId);
-        if (!department) {
-            throw new HttpException(404, 'Department not found', "NOT FOUND");
+        if (roleId) {
+            const role = await roleService.getRole(roleId);
+            newEmployee.role = role;
         }
-        newEmployee.department = department;
+
+        if (departmentId) {
+            const department = await departmentService.getDepartmentById(departmentId);
+            if (!department) {
+                throw new HttpException(404, 'Department not found', "NOT FOUND");
+            }
+            newEmployee.department = department;
+        }
 
         const newAddress = new Address();
         newAddress.addressLine1 = address.addressLine1;
@@ -70,13 +73,15 @@ class EmployeeService {
 
         employee.name = updateEmployeeDto.name;
         employee.username = updateEmployeeDto.username;
-        employee.password = await bcrypt.hash(updateEmployeeDto.password, 10);
+        if (updateEmployeeDto.password) {
+            employee.password = await bcrypt.hash(updateEmployeeDto.password, 10);
+        }
         employee.joiningDate = updateEmployeeDto.joiningDate;
         employee.experience = updateEmployeeDto.experience;
         employee.status = updateEmployeeDto.status;
 
-        if (updateEmployeeDto.role) {
-            const role = await roleService.getRole(updateEmployeeDto.role);
+        if (updateEmployeeDto.roleId) {
+            const role = await roleService.getRole(updateEmployeeDto.roleId);
             employee.role = role;
         }
 

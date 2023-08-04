@@ -39,7 +39,7 @@ class UpdateEmployeeDto {
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
-    role: string
+    roleId: string
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsEnum(Status)

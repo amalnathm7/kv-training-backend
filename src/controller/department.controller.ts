@@ -8,18 +8,19 @@ import UpdateDepartmentDto from "../dto/update-department.dto";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
 import authorize from "../middleware/authorize.middleware";
+import superAuthorize from "../middleware/super.authorize.middleware";
 
 class DepartmentController {
     public router: express.Router;
 
     constructor(private departmentService: DepartmentService) {
         this.router = express.Router();
-        this.router.post("/", this.createDepartment);
-        this.router.get("/", this.getAllDepartments);
-        this.router.get("/:id", this.getDepartmentById);
-        this.router.put("/:id", this.setDepartment);
-        this.router.patch("/:id", this.updateDepartment);
-        this.router.delete("/:id", this.deleteDepartment);
+        this.router.post("/", authenticate, superAuthorize, this.createDepartment);
+        this.router.get("/", authenticate, authorize, this.getAllDepartments);
+        this.router.get("/:id", authenticate, authorize, this.getDepartmentById);
+        this.router.put("/:id", authenticate, superAuthorize, this.setDepartment);
+        this.router.patch("/:id", authenticate, superAuthorize, this.updateDepartment);
+        this.router.delete("/:id", authenticate, superAuthorize, this.deleteDepartment);
     }
 
     createDepartment = async (req: Request, res: Response, next: NextFunction) => {

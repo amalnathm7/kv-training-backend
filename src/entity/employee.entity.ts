@@ -22,7 +22,7 @@ class Employee extends AbstractEntity {
     @Column()
     experience: number
 
-    @ManyToOne(() => Department, (department) => department.employees)
+    @ManyToOne(() => Department, { nullable: true })
     department: Department;
 
     @Column()
@@ -31,7 +31,7 @@ class Employee extends AbstractEntity {
     @OneToOne(() => Address, (address) => address.employee, { cascade: true })
     address: Address;
 
-    @ManyToOne(() => Role, (role) => role.employees)
+    @ManyToOne(() => Role, { nullable: true })
     role: Role
 }
 

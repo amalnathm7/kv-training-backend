@@ -4,21 +4,21 @@ import { plainToInstance } from "class-transformer";
 import CreateRoleDto from "../dto/create-role.dto";
 import { validate } from "class-validator";
 import ValidationException from "../exception/validation.exception";
+import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
 import authorize from "../middleware/authorize.middleware";
-import { JsonResponseUtil } from "../utils/json.response.util";
+import superAuthorize from "../middleware/super.authorize.middleware";
 
 class RoleController {
     public router: express.Router;
 
     constructor(private roleService: RoleService) {
         this.router = express.Router();
-        this.router.get("/", this.getAllRoles);
-        this.router.post("/", this.createRole);
-        this.router.get("/:id", this.getRole);
-        this.router.put("/:id", this.updateRole);
-        this.router.patch("/:id", this.updateRole);
-        this.router.delete("/:id", this.deleteRole);
+        this.router.get("/", authenticate, authorize, this.getAllRoles);
+        this.router.post("/", authenticate, superAuthorize, this.createRole);
+        this.router.get("/:id", authenticate, authorize, this.getRole);
+        this.router.put("/:id", authenticate, superAuthorize, this.updateRole);
+        this.router.delete("/:id", authenticate, superAuthorize, this.deleteRole);
     }
 
     getAllRoles = async (req: Request, res: Response, next: NextFunction) => {
