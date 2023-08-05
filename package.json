@@ -28,7 +28,8 @@
     "pg": "^8.11.2",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.17",
-    "typeorm-naming-strategy": "^2.0.2"
+    "typeorm-naming-strategy": "^2.0.2",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",

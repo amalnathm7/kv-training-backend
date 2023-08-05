@@ -12,7 +12,7 @@ const dataSource = new DataSource({
     database: process.env.POSTGRES_DB,
     entities: ["dist/entity/*.js"],
     migrations: ["dist/db/migrations/*.js"],
-    logging: true,
+    // logging: true,
     namingStrategy: new SnakeNamingStrategy(),
 });
 

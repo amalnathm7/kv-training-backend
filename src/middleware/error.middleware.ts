@@ -1,10 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request } from "express";
 import HttpException from "../exception/http.exception";
 import ValidationException from "../exception/validation.exception";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { JsonResponseUtil } from "../utils/json.response.util";
+import { ResponseWithTrace } from "../utils/response.with.trace";
 
-const errorMiddleware = (error: Error, req: Request, res: Response, next: NextFunction) => {
+const errorMiddleware = (error: Error, req: Request, res: ResponseWithTrace, next: NextFunction) => {
     try {
         if (error instanceof JsonWebTokenError) {
             JsonResponseUtil.sendJsonResponse403(res, { error: error.message });

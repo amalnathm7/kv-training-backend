@@ -7,8 +7,8 @@ import ValidationException from "../exception/validation.exception";
 import UpdateDepartmentDto from "../dto/update-department.dto";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
-import authorize from "../middleware/authorize.middleware";
-import superAuthorize from "../middleware/super.authorize.middleware";
+import { authorize, superAuthorize } from "../middleware/authorize.middleware";
+import { ResponseWithTrace } from "../utils/response.with.trace";
 
 class DepartmentController {
     public router: express.Router;
@@ -23,7 +23,7 @@ class DepartmentController {
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteDepartment);
     }
 
-    createDepartment = async (req: Request, res: Response, next: NextFunction) => {
+    createDepartment = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const createDepartmentDto = plainToInstance(CreateDepartmentDto, req.body);
@@ -39,7 +39,7 @@ class DepartmentController {
         }
     }
 
-    getAllDepartments = async (req: Request, res: Response, next: NextFunction) => {
+    getAllDepartments = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const departments = await this.departmentService.getAllDepartments();
@@ -49,7 +49,7 @@ class DepartmentController {
         }
     }
 
-    getDepartmentById = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    getDepartmentById = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const departmentId = req.params.id;
@@ -60,7 +60,7 @@ class DepartmentController {
         }
     }
 
-    setDepartment = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    setDepartment = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const departmentId = req.params.id;
@@ -77,7 +77,7 @@ class DepartmentController {
         }
     }
 
-    updateDepartment = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    updateDepartment = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const departmentId = req.params.id;
@@ -94,7 +94,7 @@ class DepartmentController {
         }
     }
 
-    deleteDepartment = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    deleteDepartment = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const departmentId = req.params.id;

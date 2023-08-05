@@ -8,8 +8,8 @@ import UpdateEmployeeDto from "../dto/update-employee.dto";
 import LoginEmployeeDto from "../dto/login-employee.dto";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
-import authorize from "../middleware/authorize.middleware";
-import superAuthorize from "../middleware/super.authorize.middleware";
+import { authorize, superAuthorize } from "../middleware/authorize.middleware";
+import { ResponseWithTrace } from "../utils/response.with.trace";
 
 class EmployeeController {
     public router: express.Router;
@@ -25,7 +25,7 @@ class EmployeeController {
         this.router.post("/login", this.loginEmployee);
     }
 
-    loginEmployee = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    loginEmployee = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const loginEmployeeDto = plainToInstance(LoginEmployeeDto, req.body);
@@ -41,7 +41,7 @@ class EmployeeController {
         }
     }
 
-    getAllEmployees = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    getAllEmployees = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const employees = await this.employeeService.getAllEmployees();
@@ -51,7 +51,7 @@ class EmployeeController {
         }
     }
 
-    getEmployeeById = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    getEmployeeById = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const employeeId = req.params.id;
@@ -62,7 +62,7 @@ class EmployeeController {
         }
     }
 
-    createEmployee = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    createEmployee = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const createEmployeeDto = plainToInstance(CreateEmployeeDto, req.body);
@@ -78,7 +78,7 @@ class EmployeeController {
         }
     }
 
-    setEmployee = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    setEmployee = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const employeeId = req.params.id;
@@ -95,7 +95,7 @@ class EmployeeController {
         }
     }
 
-    updateEmployee = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    updateEmployee = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const employeeId = req.params.id;
@@ -112,7 +112,7 @@ class EmployeeController {
         }
     }
 
-    deleteEmployee = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    deleteEmployee = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const employeeId = req.params.id;

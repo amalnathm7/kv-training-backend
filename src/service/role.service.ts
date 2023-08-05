@@ -1,4 +1,4 @@
-import CreateRoleDto from "../dto/create-role.dto";
+import UpdateRoleDto from "../dto/create-role.dto";
 import { Role } from "../entity/role.entity";
 import HttpException from "../exception/http.exception";
 import RoleRepository from "../repository/role.repository";
@@ -18,17 +18,17 @@ class RoleService {
         return role;
     }
 
-    createRole(createRoleDto: CreateRoleDto): Promise<Role> {
+    createRole(createRoleDto: UpdateRoleDto): Promise<Role> {
         const role = new Role();
         role.role = createRoleDto.role;
         role.permissionLevel = createRoleDto.permissionLevel;
         return this.roleRepository.saveRole(role);
     }
 
-    async updateRole(id: string, createRoleDto: CreateRoleDto) {
+    async updateRole(id: string, updateRoleDto: UpdateRoleDto) {
         const role = await this.getRole(id);
-        role.role = createRoleDto.role;
-        role.permissionLevel = createRoleDto.permissionLevel;
+        role.role = updateRoleDto.role;
+        role.permissionLevel = updateRoleDto.permissionLevel;
         this.roleRepository.saveRole(role);
     }
 

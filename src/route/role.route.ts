@@ -9,4 +9,4 @@ const roleService = new RoleService(roleRepository);
 const roleController = new RoleController(roleService);
 const roleRoute = roleController.router;
 
-export { roleRoute, roleService };
+export { roleRoute, roleService, roleRepository };

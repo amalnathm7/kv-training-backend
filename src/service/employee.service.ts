@@ -27,8 +27,7 @@ class EmployeeService {
     }
 
     async createEmployee(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
-        const { name, username, password, joiningDate, experience, departmentId, address, status } = createEmployeeDto;
-        const roleId = createEmployeeDto.roleId;
+        const { name, username, password, joiningDate, experience, departmentId, address, status, roleId } = createEmployeeDto;
         const newEmployee = new Employee();
         newEmployee.name = name;
         newEmployee.username = username;
@@ -36,7 +35,7 @@ class EmployeeService {
         newEmployee.joiningDate = joiningDate;
         newEmployee.experience = experience;
         newEmployee.status = status;
-
+        
         if (roleId) {
             const role = await roleService.getRole(roleId);
             newEmployee.role = role;
@@ -119,7 +118,7 @@ class EmployeeService {
         const payload: jwtPayload = {
             name: employee.name,
             username: employee.username,
-            role: employee.role.id
+            role: employee.role ? employee.role.id : ""
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
         return { token };

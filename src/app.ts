@@ -12,9 +12,9 @@ import { roleRoute } from "./route/role.route";
 const server = express();
 server.use(express.json());
 server.use(loggerMiddleware);
+server.use('/api/roles', roleRoute);
 server.use('/employees', employeeRoute);
 server.use('/departments', departmentRoute);
-server.use('/api/roles', roleRoute);
 server.use(errorMiddleware);
 
 const PORT = 3000;

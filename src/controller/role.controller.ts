@@ -6,8 +6,9 @@ import { validate } from "class-validator";
 import ValidationException from "../exception/validation.exception";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
-import authorize from "../middleware/authorize.middleware";
-import superAuthorize from "../middleware/super.authorize.middleware";
+import { authorize, superAuthorize } from "../middleware/authorize.middleware";
+import UpdateRoleDto from "../dto/update-role.dto";
+import { ResponseWithTrace } from "../utils/response.with.trace";
 
 class RoleController {
     public router: express.Router;
@@ -17,11 +18,12 @@ class RoleController {
         this.router.get("/", authenticate, authorize, this.getAllRoles);
         this.router.post("/", authenticate, superAuthorize, this.createRole);
         this.router.get("/:id", authenticate, authorize, this.getRole);
-        this.router.put("/:id", authenticate, superAuthorize, this.updateRole);
+        this.router.put("/:id", authenticate, superAuthorize, this.setRole);
+        this.router.patch("/:id", authenticate, superAuthorize, this.updateRole);
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteRole);
     }
 
-    getAllRoles = async (req: Request, res: Response, next: NextFunction) => {
+    getAllRoles = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const roles = await this.roleService.getAllRoles();
@@ -31,7 +33,7 @@ class RoleController {
         }
     }
 
-    getRole = async (req: Request, res: Response, next: NextFunction) => {
+    getRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const roleId = req.params.id;
@@ -42,7 +44,7 @@ class RoleController {
         }
     }
 
-    updateRole = async (req: Request, res: Response, next: NextFunction) => {
+    setRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const roleId = req.params.id;
@@ -59,7 +61,24 @@ class RoleController {
         }
     }
 
-    deleteRole = async (req: Request, res: Response, next: NextFunction) => {
+    updateRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+        try {
+            const startTime = new Date();
+            const roleId = req.params.id;
+            const updateRoleDto = plainToInstance(UpdateRoleDto, req.body);
+            const errors = await validate(updateRoleDto);
+            if (errors.length > 0) {
+                throw new ValidationException(errors);
+            } else {
+                await this.roleService.updateRole(roleId, updateRoleDto);
+                JsonResponseUtil.sendJsonResponse204(res, startTime);
+            }
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    deleteRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const roleId = req.params.id;
@@ -70,7 +89,7 @@ class RoleController {
         }
     }
 
-    createRole = async (req: Request, res: Response, next: NextFunction) => {
+    createRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
             const createRoleDto = plainToInstance(CreateRoleDto, req.body);

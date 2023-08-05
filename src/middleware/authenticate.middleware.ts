@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
 import { RequestWithUser } from "../utils/request.with.user";
 import { jwtPayload } from "../utils/jwt.payload.type";
+import { ResponseWithTrace } from "../utils/response.with.trace";
 
-const authenticate = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+const authenticate = async (req: RequestWithUser, res: ResponseWithTrace, next: NextFunction) => {
     try {
         const token = getTokenFromRequestHeader(req);
         const payload: jwtPayload = jwt.verify(token, process.env.JWT_SECRET) as jwtPayload;
-        // Inject into req
         req.name = payload.name;
         req.username = payload.username;
         req.role = payload.role;
