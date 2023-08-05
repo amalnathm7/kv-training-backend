@@ -1,4 +1,4 @@
-import { winstonLogger } from "./winston.logger";
+import winstonLogger from "./winston.logger";
 import { ResponseWithTrace } from "./response.with.trace";
 
 export class JsonResponseUtil {

@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { winstonLogger } from "../utils/winston.logger";
+import { NextFunction, Request} from "express";
+import winstonLogger from "../utils/winston.logger";
 import crypto from "crypto";
 import { ResponseWithTrace } from "../utils/response.with.trace";
 
