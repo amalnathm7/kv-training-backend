@@ -14,7 +14,7 @@ class EmployeeRepository {
         });
     }
 
-    findEmployeeById(id: string): Promise<Employee> {
+    findEmployeeById(id: string): Promise<Employee | null> {
         return this.employeeRepository.findOne({
             where: { id },
             relations: {
@@ -25,7 +25,7 @@ class EmployeeRepository {
         });
     }
 
-    findEmployeeByUsername(username: string): Promise<Employee> {
+    findEmployeeByUsername(username: string): Promise<Employee | null> {
         return this.employeeRepository.findOne({
             where: { username },
             relations: {

@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Role } from "../entity/role.entity";
+import Role from "../entity/role.entity";
 
 class RoleRepository {
     constructor(private roleRepository: Repository<Role>) { };
@@ -8,7 +8,7 @@ class RoleRepository {
         return this.roleRepository.find();
     }
 
-    findRole(id: string): Promise<Role> {
+    findRole(id: string): Promise<Role | null> {
         return this.roleRepository.findOneBy({ id });
     }
 

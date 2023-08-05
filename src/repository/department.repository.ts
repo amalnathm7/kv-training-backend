@@ -9,7 +9,7 @@ class DepartmentRepository {
         });
     }
 
-    findDepartmentById(id: string): Promise<Department> {
+    findDepartmentById(id: string): Promise<Department | null> {
         return this.departmentRepository.findOne({
             where: {
                 id: id,
@@ -17,12 +17,12 @@ class DepartmentRepository {
         });
     }
 
-    saveDepartment(employee: Department): Promise<Department> {
-        return this.departmentRepository.save(employee);
+    saveDepartment(department: Department): Promise<Department> {
+        return this.departmentRepository.save(department);
     }
 
-    deleteDepartment(employee: Department): Promise<Department> {
-        return this.departmentRepository.softRemove(employee);
+    deleteDepartment(department: Department): Promise<Department> {
+        return this.departmentRepository.softRemove(department);
     }
 }
 

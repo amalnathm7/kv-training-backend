@@ -23,6 +23,22 @@ class RoleController {
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteRole);
     }
 
+    createRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+        try {
+            const startTime = new Date();
+            const createRoleDto = plainToInstance(CreateRoleDto, req.body);
+            const errors = await validate(createRoleDto);
+            if (errors.length > 0) {
+                throw new ValidationException(errors);
+            } else {
+                const newRole = await this.roleService.createRole(createRoleDto);
+                JsonResponseUtil.sendJsonResponse201(res, newRole, startTime);
+            }
+        } catch (e) {
+            next(e);
+        }
+    }
+
     getAllRoles = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
             const startTime = new Date();
@@ -84,22 +100,6 @@ class RoleController {
             const roleId = req.params.id;
             await this.roleService.deleteRole(roleId);
             JsonResponseUtil.sendJsonResponse204(res, startTime);
-        } catch (e) {
-            next(e);
-        }
-    }
-
-    createRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
-        try {
-            const startTime = new Date();
-            const createRoleDto = plainToInstance(CreateRoleDto, req.body);
-            const errors = await validate(createRoleDto);
-            if (errors.length > 0) {
-                throw new ValidationException(errors);
-            } else {
-                const newRole = await this.roleService.createRole(createRoleDto);
-                JsonResponseUtil.sendJsonResponse201(res, newRole, startTime);
-            }
         } catch (e) {
             next(e);
         }

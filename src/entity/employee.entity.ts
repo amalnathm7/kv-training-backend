@@ -3,7 +3,7 @@ import Address from "./address.entity";
 import { AbstractEntity } from "./abstract.entity";
 import { Status } from "../utils/status.enum";
 import Department from "./department.entity";
-import { Role } from "./role.entity";
+import Role from "./role.entity";
 
 @Entity()
 class Employee extends AbstractEntity {

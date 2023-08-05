@@ -43,9 +43,6 @@ class EmployeeService {
 
         if (departmentId) {
             const department = await departmentService.getDepartmentById(departmentId);
-            if (!department) {
-                throw new HttpException(404, 'Department not found', "NOT FOUND");
-            }
             newEmployee.department = department;
         }
 
@@ -86,9 +83,6 @@ class EmployeeService {
 
         if (updateEmployeeDto.departmentId) {
             const department = await departmentService.getDepartmentById(updateEmployeeDto.departmentId);
-            if (!department) {
-                throw new HttpException(404, 'Department not found', "NOT FOUND");
-            }
             employee.department = department;
         }
 

@@ -5,7 +5,7 @@ import { PermissionLevel } from "../utils/permission.level.enum";
 import RoleService from "../service/role.service";
 import RoleRepository from "../repository/role.repository";
 import dataSource from "../db/postgres.db";
-import { Role } from "../entity/role.entity";
+import Role from "../entity/role.entity";
 import { ResponseWithTrace } from "../utils/response.with.trace";
 
 const authorize = async (

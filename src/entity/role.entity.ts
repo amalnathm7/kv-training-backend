@@ -3,7 +3,7 @@ import { PermissionLevel } from "../utils/permission.level.enum";
 import Employee from "./employee.entity";
 
 @Entity()
-export class Role {
+class Role {
     @PrimaryGeneratedColumn()
     id: string
 
@@ -16,3 +16,5 @@ export class Role {
     @OneToMany(() => Employee, (employee) => employee.role)
     employees: Employee[]
 }
+
+export default Role;

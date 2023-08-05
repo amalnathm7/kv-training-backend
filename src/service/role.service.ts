@@ -1,5 +1,5 @@
 import UpdateRoleDto from "../dto/create-role.dto";
-import { Role } from "../entity/role.entity";
+import Role from "../entity/role.entity";
 import HttpException from "../exception/http.exception";
 import RoleRepository from "../repository/role.repository";
 
@@ -10,8 +10,8 @@ class RoleService {
         return this.roleRepository.findAllRoles();
     }
 
-    getRole(id: string): Promise<Role> {
-        const role = this.roleRepository.findRole(id);
+    async getRole(id: string): Promise<Role | null> {
+        const role = await this.roleRepository.findRole(id);
         if (!role) {
             throw new HttpException(404, "Role not found", "NOT FOUND");
         }
