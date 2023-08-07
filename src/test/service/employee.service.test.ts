@@ -160,7 +160,28 @@ describe('Employee Service Test', () => {
     });
 
     describe('loginEmployee', () => {
-        test('Success case', async () => {
+        test('Success case with role', async () => {
+            const body = {
+                username: "username",
+                password: "password"
+            }
+
+            const employee = new Employee();
+            employee.name = "name";
+            employee.username = "username";
+            employee.role = new Role();
+            employee.role.id = "role";
+            employee.password = await bcrypt.hash("password", 10);
+
+            const mockFunction = jest.fn();
+            when(mockFunction).calledWith(body.username).mockResolvedValueOnce(employee);
+            employeeRepository.findEmployeeByUsername = mockFunction;
+
+            const token = await employeeService.loginEmployee(plainToInstance(LoginEmployeeDto, body));
+            expect(token).toBeDefined();
+        });
+
+        test('Success case without role', async () => {
             const body = {
                 username: "username",
                 password: "password"
@@ -194,7 +215,7 @@ describe('Employee Service Test', () => {
             when(mockFunction).calledWith(body.username).mockResolvedValueOnce(null);
             employeeRepository.findEmployeeByUsername = mockFunction;
 
-            expect(async () => await employeeService.loginEmployee(plainToInstance(LoginEmployeeDto, body))).rejects.toThrowError(HttpException);
+            await expect(async () => await employeeService.loginEmployee(plainToInstance(LoginEmployeeDto, body))).rejects.toThrowError(HttpException);
         });
 
         test('Failure case for invalid password', async () => {
@@ -206,15 +227,13 @@ describe('Employee Service Test', () => {
             const employee = new Employee();
             employee.name = "name";
             employee.username = "username";
-            employee.role = new Role();
-            employee.role.id = "role";
             employee.password = await bcrypt.hash("password", 10);
 
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(body.username).mockResolvedValueOnce(employee);
             employeeRepository.findEmployeeByUsername = mockFunction;
 
-            expect(async () => await employeeService.loginEmployee(plainToInstance(LoginEmployeeDto, body))).rejects.toThrowError(HttpException);
+            await expect(async () => await employeeService.loginEmployee(plainToInstance(LoginEmployeeDto, body))).rejects.toThrowError(HttpException);
         });
     });
 });
