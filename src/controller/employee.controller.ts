@@ -43,8 +43,10 @@ class EmployeeController {
 
     getAllEmployees = async (req: express.Request, res: ResponseWithTrace, next: NextFunction) => {
         try {
+            const offset = Number(req.query.offset ? req.query.offset : 0);
             const startTime = new Date();
-            const employees = await this.employeeService.getAllEmployees();
+            const employees = await this.employeeService.getAllEmployees(offset);
+            employees.push(offset);
             JsonResponseUtil.sendJsonResponse200(res, employees, startTime);
         } catch (e) {
             next(e);

@@ -17,14 +17,23 @@ export class JsonResponseUtil {
             message: `${statusCode} ${message}`,
         });
 
+        let total = Array.isArray(data) ? data.length : 1;
+        let offset = Number.isInteger(data[2]) ? data[2] : 0;
+
+        if(Array.isArray(data) && Number.isInteger(data[1])) {
+            total = data[1];
+            data = data[0];
+        }
+
         res.status(statusCode).send({
             data: data,
             errors: errors,
             message: message,
             meta: {
+                "offset": offset,
                 "length": Array.isArray(data) ? data.length : 1,
                 "took": tookTime,
-                "total": Array.isArray(data) ? data.length : 1,
+                "total": total,
             }
         });
     }
