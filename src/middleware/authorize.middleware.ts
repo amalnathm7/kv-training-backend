@@ -22,7 +22,7 @@ const authorize = async (
 
         const role = await (new RoleService(new RoleRepository(dataSource.getRepository(Role)))).getRole(roleId);
 
-        if (!role || role.permissionLevel === PermissionLevel.BASIC) {
+        if (role.permissionLevel === PermissionLevel.BASIC) {
             throw new HttpException(403, "You are not authorized to perform this action", "FORBIDDEN");
         }
 
@@ -46,7 +46,7 @@ const superAuthorize = async (
 
         const role = await (new RoleService(new RoleRepository(dataSource.getRepository(Role)))).getRole(roleId);
 
-        if (!role || role.permissionLevel !== PermissionLevel.SUPER) {
+        if (role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "FORBIDDEN");
         }
 

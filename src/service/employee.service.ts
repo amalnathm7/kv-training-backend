@@ -105,7 +105,7 @@ class EmployeeService {
         }
 
         const result = await bcrypt.compare(loginEmployeeDto.password, employee.password);
-        if (!result) {
+        if (result === false) {
             throw new HttpException(401, "Incorrect username or password", "UNAUTHORIZED");
         }
 
