@@ -26,7 +26,7 @@ describe('Employee Service Test', () => {
         } as unknown as DataSource;
 
         employeeRepository = new EmployeeRepository(dataSource.getRepository(Employee));
-        employeeService = new EmployeeService(employeeRepository);
+        employeeService = new EmployeeService(employeeRepository, departmentService, roleService);
     });
 
     describe('getEmployeeById', () => {

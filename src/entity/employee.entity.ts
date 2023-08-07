@@ -4,7 +4,7 @@ import { AbstractEntity } from "./abstract.entity";
 import { Status } from "../utils/status.enum";
 import Department from "./department.entity";
 import Role from "./role.entity";
-import { Exclude, classToPlain, instanceToPlain } from "class-transformer";
+import { Exclude } from "class-transformer";
 
 @Entity()
 class Employee extends AbstractEntity {
@@ -35,10 +35,6 @@ class Employee extends AbstractEntity {
 
     @ManyToOne(() => Role, { nullable: true })
     role: Role
-
-    toJSON() {
-        return instanceToPlain(this);
-    }
 }
 
 export default Employee;

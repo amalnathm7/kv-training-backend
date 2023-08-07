@@ -8,11 +8,11 @@ import EmployeeRepository from "../repository/employee.repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtPayload } from "../utils/jwt.payload.type";
-import { departmentService } from "../route/department.route";
-import { roleService } from "../route/role.route";
+import DepartmentService from "./department.service";
+import RoleService from "./role.service";
 
 class EmployeeService {
-    constructor(private employeeRepository: EmployeeRepository) { }
+    constructor(private employeeRepository: EmployeeRepository, private departmentService: DepartmentService, private roleService: RoleService) { }
 
     getAllEmployees(offset: number, pageLength: number): Promise<[Employee[], number]> {
         return this.employeeRepository.findAllEmployees(offset, pageLength);
@@ -35,14 +35,14 @@ class EmployeeService {
         newEmployee.joiningDate = joiningDate;
         newEmployee.experience = experience;
         newEmployee.status = status;
-        
+
         if (roleId) {
-            const role = await roleService.getRole(roleId);
+            const role = await this.roleService.getRole(roleId);
             newEmployee.role = role;
         }
 
         if (departmentId) {
-            const department = await departmentService.getDepartmentById(departmentId);
+            const department = await this.departmentService.getDepartmentById(departmentId);
             newEmployee.department = department;
         }
 
@@ -77,12 +77,12 @@ class EmployeeService {
         employee.status = updateEmployeeDto.status;
 
         if (updateEmployeeDto.roleId) {
-            const role = await roleService.getRole(updateEmployeeDto.roleId);
+            const role = await this.roleService.getRole(updateEmployeeDto.roleId);
             employee.role = role;
         }
 
         if (updateEmployeeDto.departmentId) {
-            const department = await departmentService.getDepartmentById(updateEmployeeDto.departmentId);
+            const department = await this.departmentService.getDepartmentById(updateEmployeeDto.departmentId);
             employee.department = department;
         }
 

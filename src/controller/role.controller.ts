@@ -6,6 +6,7 @@ import authenticate from "../middleware/authenticate.middleware";
 import { authorize, superAuthorize } from "../middleware/authorize.middleware";
 import UpdateRoleDto from "../dto/update-role.dto";
 import { ResponseWithLog } from "../utils/response.with.log";
+import validateMiddleware from "../middleware/validate.middleware";
 
 class RoleController {
     public router: express.Router;
@@ -13,10 +14,10 @@ class RoleController {
     constructor(private roleService: RoleService) {
         this.router = express.Router();
         this.router.get("/", authenticate, authorize, this.getAllRoles);
-        this.router.post("/", authenticate, superAuthorize, this.createRole);
+        this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateRoleDto), this.createRole);
         this.router.get("/:id", authenticate, authorize, this.getRole);
-        this.router.put("/:id", authenticate, superAuthorize, this.setRole);
-        this.router.patch("/:id", authenticate, superAuthorize, this.updateRole);
+        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateRoleDto), this.setRole);
+        this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateRoleDto), this.updateRole);
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteRole);
     }
 
