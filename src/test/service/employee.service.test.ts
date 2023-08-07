@@ -51,7 +51,7 @@ describe('Employee Service Test', () => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([{ id: 1, name: "Name" }]);
             employeeRepository.findAllEmployees = mockFunction;
-            const employee = await employeeService.getAllEmployees(0);
+            const employee = await employeeService.getAllEmployees(0, 10);
             expect(employee).toStrictEqual([{ id: 1, name: "Name" }]);
         });
 
@@ -59,7 +59,7 @@ describe('Employee Service Test', () => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([]);
             employeeRepository.findAllEmployees = mockFunction;
-            const employees = await employeeService.getAllEmployees(0);
+            const employees = await employeeService.getAllEmployees(0, 10);
             expect(employees).toStrictEqual([]);
         });
     });

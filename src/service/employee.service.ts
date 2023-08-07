@@ -14,8 +14,8 @@ import { roleService } from "../route/role.route";
 class EmployeeService {
     constructor(private employeeRepository: EmployeeRepository) { }
 
-    getAllEmployees(offset: number): Promise<[Employee[], number]> {
-        return this.employeeRepository.findAllEmployees(offset);
+    getAllEmployees(offset: number, pageLength: number): Promise<[Employee[], number]> {
+        return this.employeeRepository.findAllEmployees(offset, pageLength);
     }
 
     async getEmployeeById(id: string): Promise<Employee | null> {

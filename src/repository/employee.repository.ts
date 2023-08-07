@@ -4,15 +4,13 @@ import Employee from "../entity/employee.entity";
 class EmployeeRepository {
     constructor(private employeeRepository: Repository<Employee>) { }
 
-    findAllEmployees(offset: number): Promise<[Employee[], number]> {
-        let paginationCount = 2;
-
+    findAllEmployees(offset: number, pageLength: number): Promise<[Employee[], number]> {
         return this.employeeRepository.findAndCount({
             order: {
                 createdAt: "asc",
             },
-            skip: offset * paginationCount,
-            take: paginationCount,
+            skip: offset * pageLength,
+            take: pageLength,
             relations: {
                 address: true,
                 department: true,

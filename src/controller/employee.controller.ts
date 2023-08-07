@@ -17,7 +17,7 @@ class EmployeeController {
         this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateEmployeeDto), this.createEmployee);
         this.router.get("/", authenticate, authorize, this.getAllEmployees);
         this.router.get("/:id", authenticate, authorize, this.getEmployeeById);
-        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(UpdateEmployeeDto), this.setEmployee);
+        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateEmployeeDto), this.setEmployee);
         this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateEmployeeDto), this.updateEmployee);
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteEmployee);
         this.router.post("/login", validateMiddleware(LoginEmployeeDto), this.loginEmployee);
@@ -35,7 +35,8 @@ class EmployeeController {
     getAllEmployees = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const offset = Number(req.query.offset ? req.query.offset : 0);
-            const employees = await this.employeeService.getAllEmployees(offset);
+            const pageLength = Number(req.query.length ? req.query.length : 10);
+            const employees = await this.employeeService.getAllEmployees(offset, pageLength);
             employees.push(offset);
             JsonResponseUtil.sendJsonResponse200(res, employees);
         } catch (e) {
