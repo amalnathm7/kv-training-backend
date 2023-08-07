@@ -5,7 +5,7 @@ class EmployeeRepository {
     constructor(private employeeRepository: Repository<Employee>) { }
 
     findAllEmployees(offset: number): Promise<[Employee[], number]> {
-        let paginationCount = 10;
+        let paginationCount = 2;
 
         return this.employeeRepository.findAndCount({
             order: {
