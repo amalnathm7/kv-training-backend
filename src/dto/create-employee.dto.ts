@@ -4,8 +4,9 @@ import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
 import { Index } from "typeorm";
 import { Status } from "../utils/status.enum";
+import { ValidateDto } from "./validate.dto";
 
-class CreateEmployeeDto {
+class CreateEmployeeDto implements ValidateDto {
     @IsNotEmpty()
     @IsString()
     name: string;

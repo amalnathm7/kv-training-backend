@@ -1,6 +1,7 @@
 import { IsString, ValidateIf } from "class-validator";
+import { ValidateDto } from "./validate.dto";
 
-class UpdateAddressDto {
+class UpdateAddressDto implements ValidateDto {
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
     addressLine1: string;

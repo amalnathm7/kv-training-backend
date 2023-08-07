@@ -6,11 +6,11 @@ import RoleService from "../service/role.service";
 import RoleRepository from "../repository/role.repository";
 import dataSource from "../db/postgres.db";
 import Role from "../entity/role.entity";
-import { ResponseWithTrace } from "../utils/response.with.trace";
+import { ResponseWithLog } from "../utils/response.with.log";
 
 const authorize = async (
     req: RequestWithUser,
-    res: ResponseWithTrace,
+    res: ResponseWithLog,
     next: NextFunction
 ) => {
     try {
@@ -34,7 +34,7 @@ const authorize = async (
 
 const superAuthorize = async (
     req: RequestWithUser,
-    res: ResponseWithTrace,
+    res: ResponseWithLog,
     next: NextFunction
 ) => {
     try {

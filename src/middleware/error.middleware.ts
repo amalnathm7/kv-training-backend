@@ -3,9 +3,9 @@ import HttpException from "../exception/http.exception";
 import ValidationException from "../exception/validation.exception";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { JsonResponseUtil } from "../utils/json.response.util";
-import { ResponseWithTrace } from "../utils/response.with.trace";
+import { ResponseWithLog } from "../utils/response.with.log";
 
-const errorMiddleware = (error: Error, req: Request, res: ResponseWithTrace, next: NextFunction) => {
+const errorMiddleware = (error: Error, req: Request, res: ResponseWithLog, next: NextFunction) => {
     try {
         if (error instanceof JsonWebTokenError) {
             JsonResponseUtil.sendJsonResponse403(res, { error: error.message });
@@ -15,7 +15,6 @@ const errorMiddleware = (error: Error, req: Request, res: ResponseWithTrace, nex
                 error.message.toUpperCase(),
                 res,
                 {},
-                new Date(),
                 error.errors
             );
         } else if (error instanceof HttpException) {
@@ -24,7 +23,6 @@ const errorMiddleware = (error: Error, req: Request, res: ResponseWithTrace, nex
                 error.statusMessage.toUpperCase(),
                 res,
                 {},
-                new Date(),
                 { error: error.message }
             );
         } else {

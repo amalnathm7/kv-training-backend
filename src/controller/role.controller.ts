@@ -1,14 +1,11 @@
-import express, { NextFunction, Request, Response } from "express"
+import express, { NextFunction, Request } from "express"
 import RoleService from "../service/role.service";
-import { plainToInstance } from "class-transformer";
 import CreateRoleDto from "../dto/create-role.dto";
-import { validate } from "class-validator";
-import ValidationException from "../exception/validation.exception";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
 import { authorize, superAuthorize } from "../middleware/authorize.middleware";
 import UpdateRoleDto from "../dto/update-role.dto";
-import { ResponseWithTrace } from "../utils/response.with.trace";
+import { ResponseWithLog } from "../utils/response.with.log";
 
 class RoleController {
     public router: express.Router;
@@ -23,83 +20,61 @@ class RoleController {
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteRole);
     }
 
-    createRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+    createRole = async (req: Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const startTime = new Date();
-            const createRoleDto = plainToInstance(CreateRoleDto, req.body);
-            const errors = await validate(createRoleDto);
-            if (errors.length > 0) {
-                throw new ValidationException(errors);
-            } else {
-                const newRole = await this.roleService.createRole(createRoleDto);
-                JsonResponseUtil.sendJsonResponse201(res, newRole, startTime);
-            }
+
+            const newRole = await this.roleService.createRole(res.dto as CreateRoleDto);
+            JsonResponseUtil.sendJsonResponse201(res, newRole);
+
         } catch (e) {
             next(e);
         }
     }
 
-    getAllRoles = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+    getAllRoles = async (req: Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const startTime = new Date();
             const roles = await this.roleService.getAllRoles();
-            JsonResponseUtil.sendJsonResponse200(res, roles, startTime);
+            JsonResponseUtil.sendJsonResponse200(res, roles);
         } catch (e) {
             next(e);
         }
     }
 
-    getRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+    getRole = async (req: Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const startTime = new Date();
             const roleId = req.params.id;
             const role = await this.roleService.getRole(roleId);
-            JsonResponseUtil.sendJsonResponse200(res, role, startTime);
+            JsonResponseUtil.sendJsonResponse200(res, role);
         } catch (e) {
             next(e);
         }
     }
 
-    setRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+    setRole = async (req: Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const startTime = new Date();
             const roleId = req.params.id;
-            const createRoleDto = plainToInstance(CreateRoleDto, req.body);
-            const errors = await validate(createRoleDto);
-            if (errors.length > 0) {
-                throw new ValidationException(errors);
-            } else {
-                await this.roleService.updateRole(roleId, createRoleDto);
-                JsonResponseUtil.sendJsonResponse204(res, startTime);
-            }
+            await this.roleService.updateRole(roleId, res.dto as UpdateRoleDto);
+            JsonResponseUtil.sendJsonResponse204(res);
         } catch (e) {
             next(e);
         }
     }
 
-    updateRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+    updateRole = async (req: Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const startTime = new Date();
             const roleId = req.params.id;
-            const updateRoleDto = plainToInstance(UpdateRoleDto, req.body);
-            const errors = await validate(updateRoleDto);
-            if (errors.length > 0) {
-                throw new ValidationException(errors);
-            } else {
-                await this.roleService.updateRole(roleId, updateRoleDto);
-                JsonResponseUtil.sendJsonResponse204(res, startTime);
-            }
+            await this.roleService.updateRole(roleId, res.dto as UpdateRoleDto);
+            JsonResponseUtil.sendJsonResponse204(res);
         } catch (e) {
             next(e);
         }
     }
 
-    deleteRole = async (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+    deleteRole = async (req: Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const startTime = new Date();
             const roleId = req.params.id;
             await this.roleService.deleteRole(roleId);
-            JsonResponseUtil.sendJsonResponse204(res, startTime);
+            JsonResponseUtil.sendJsonResponse204(res);
         } catch (e) {
             next(e);
         }

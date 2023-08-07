@@ -4,8 +4,9 @@ import { Type } from "class-transformer";
 import UpdateAddressDto from "./update-address.dto";
 import { Index } from "typeorm";
 import { Status } from "../utils/status.enum";
+import { ValidateDto } from "./validate.dto";
 
-class UpdateEmployeeDto {
+class UpdateEmployeeDto implements ValidateDto {
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
     name: string;

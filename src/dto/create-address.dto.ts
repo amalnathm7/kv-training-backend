@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
+import { ValidateDto } from "./validate.dto";
 
-class CreateAddressDto {
+class CreateAddressDto implements ValidateDto {
     @IsNotEmpty()
     @IsString()
     addressLine1: string;

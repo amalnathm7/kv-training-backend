@@ -6,6 +6,9 @@ class DepartmentRepository {
 
     findAllDepartments(): Promise<Department[]> {
         return this.departmentRepository.find({
+            order: {
+                createdAt: "asc"
+            }
         });
     }
 

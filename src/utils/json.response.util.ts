@@ -1,10 +1,10 @@
 import winstonLogger from "./winston.logger";
-import { ResponseWithTrace } from "./response.with.trace";
+import { ResponseWithLog } from "./response.with.log";
 
 export class JsonResponseUtil {
-    static sendJsonResponse(statusCode: number, message: string, res: ResponseWithTrace, data: Object, startTime: Date, errors: Object = null) {
+    static sendJsonResponse(statusCode: number, message: string, res: ResponseWithLog, data: Object, errors: Object = null) {
         const endTime = new Date();
-        const tookTime = endTime.getTime() - startTime.getTime();
+        const tookTime = endTime.getTime() - res.startTime.getTime();
 
         let level = 'http';
         if (errors) {
@@ -12,7 +12,7 @@ export class JsonResponseUtil {
         }
         winstonLogger.log({
             level: level,
-            timeStamp: startTime,
+            timeStamp: res.startTime,
             traceId: res.traceId,
             message: `${statusCode} ${message}`,
         });
@@ -38,27 +38,27 @@ export class JsonResponseUtil {
         });
     }
 
-    static sendJsonResponse200(res: ResponseWithTrace, data: Object, startTime: Date) {
-        this.sendJsonResponse(200, "OK", res, data, startTime);
+    static sendJsonResponse200(res: ResponseWithLog, data: Object) {
+        this.sendJsonResponse(200, "OK", res, data);
     }
 
-    static sendJsonResponse201(res: ResponseWithTrace, data: Object, startTime: Date) {
-        this.sendJsonResponse(201, "CREATED", res, data, startTime);
+    static sendJsonResponse201(res: ResponseWithLog, data: Object) {
+        this.sendJsonResponse(201, "CREATED", res, data);
     }
 
-    static sendJsonResponse204(res: ResponseWithTrace, startTime: Date) {
-        this.sendJsonResponse(204, "NO CONTENT", res, {}, startTime);
+    static sendJsonResponse204(res: ResponseWithLog) {
+        this.sendJsonResponse(204, "NO CONTENT", res, {});
     }
 
-    static sendJsonResponse401(res: ResponseWithTrace, errors: Object) {
-        this.sendJsonResponse(401, "UNAUTHORIZED", res, {}, new Date(), errors);
+    static sendJsonResponse401(res: ResponseWithLog, errors: Object) {
+        this.sendJsonResponse(401, "UNAUTHORIZED", res, {}, errors);
     }
 
-    static sendJsonResponse403(res: ResponseWithTrace, errors: Object) {
-        this.sendJsonResponse(403, "FORBIDDEN", res, {}, new Date(), errors);
+    static sendJsonResponse403(res: ResponseWithLog, errors: Object) {
+        this.sendJsonResponse(403, "FORBIDDEN", res, {}, errors);
     }
 
-    static sendJsonResponse500(res: ResponseWithTrace, errors: Object) {
-        this.sendJsonResponse(500, "INTERNAL SERVER ERROR", res, {}, new Date(), errors);
+    static sendJsonResponse500(res: ResponseWithLog, errors: Object) {
+        this.sendJsonResponse(500, "INTERNAL SERVER ERROR", res, {}, errors);
     }
 }

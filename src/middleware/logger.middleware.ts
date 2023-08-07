@@ -1,12 +1,14 @@
 import { NextFunction, Request} from "express";
 import winstonLogger from "../utils/winston.logger";
 import crypto from "crypto";
-import { ResponseWithTrace } from "../utils/response.with.trace";
+import { ResponseWithLog } from "../utils/response.with.log";
+import { RequestWithUser } from "../utils/request.with.user";
 
-const loggerMiddleware = (req: Request, res: ResponseWithTrace, next: NextFunction) => {
+const loggerMiddleware = (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
     const traceId = crypto.randomUUID();
     
     res.traceId = traceId;
+    res.startTime = new Date();
     
     winstonLogger.log({
         level: 'http',
