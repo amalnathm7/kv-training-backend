@@ -8,8 +8,10 @@ import employeeRoute from "./route/employee.route";
 import errorMiddleware from "./middleware/error.middleware";
 import { departmentRoute } from "./route/department.route";
 import { roleRoute } from "./route/role.route";
+import cors from "cors";
 
 const server = express();
+server.use(cors());
 server.use(express.json());
 server.use(loggerMiddleware);
 server.use('/api/roles', roleRoute);
