@@ -10,6 +10,7 @@ import jwt from "jsonwebtoken";
 import { jwtPayload } from "../utils/jwt.payload.type";
 import DepartmentService from "./department.service";
 import RoleService from "./role.service";
+import { PermissionLevel } from "../utils/permission.level.enum";
 
 class EmployeeService {
     constructor(private employeeRepository: EmployeeRepository, private departmentService: DepartmentService, private roleService: RoleService) { }
@@ -112,7 +113,7 @@ class EmployeeService {
         const payload: jwtPayload = {
             name: employee.name,
             username: employee.username,
-            role: employee.role ? employee.role.id : ""
+            permissionLevel: employee.role ? employee.role.permissionLevel : PermissionLevel.BASIC
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
         return { token };
