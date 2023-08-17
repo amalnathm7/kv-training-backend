@@ -26,6 +26,14 @@ class EmployeeService {
         return employee;
     }
 
+    async getEmployeeByUsername(username: string): Promise<Employee | null> {
+        const employee = await this.employeeRepository.findEmployeeByUsername(username);
+        if (!employee) {
+            throw new HttpException(404, "Employee not found", "NOT FOUND");
+        }
+        return employee;
+    }
+
     async createEmployee(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
         const { name, username, password, joiningDate, experience, departmentId, address, status, roleId } = createEmployeeDto;
         const newEmployee = new Employee();

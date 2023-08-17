@@ -8,6 +8,8 @@ import authenticate from "../middleware/authenticate.middleware";
 import { authorize, superAuthorize } from "../middleware/authorize.middleware";
 import { ResponseWithLog } from "../utils/response.with.log";
 import validateMiddleware from "../middleware/validate.middleware";
+import { parseJwt } from "../utils/jwt.parser";
+import winstonLogger from "../utils/winston.logger";
 
 class EmployeeController {
     public router: express.Router;
@@ -16,11 +18,23 @@ class EmployeeController {
         this.router = express.Router();
         this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateEmployeeDto), this.createEmployee);
         this.router.get("/", authenticate, authorize, this.getAllEmployees);
+        this.router.get("/profile", authenticate, this.getProfile);
         this.router.get("/:id", authenticate, authorize, this.getEmployeeById);
         this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateEmployeeDto), this.setEmployee);
         this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateEmployeeDto), this.updateEmployee);
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteEmployee);
         this.router.post("/login", validateMiddleware(LoginEmployeeDto), this.loginEmployee);
+    }
+
+    getProfile = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+        try {
+            const payload = parseJwt(req.headers.authorization.split(' ')[1]);
+            const username = payload.username;
+            const profile = await this.employeeService.getEmployeeByUsername(username);
+            JsonResponseUtil.sendJsonResponse200(res, profile);
+        } catch (error) {
+            next(error);
+        }
     }
 
     loginEmployee = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
