@@ -31,14 +31,15 @@ class Employee extends AbstractEntity {
     @ManyToOne(() => Department, { nullable: true })
     department: Department;
 
+    @ManyToOne(() => Role, { nullable: true })
+    role: Role
+
     @Column()
     status: Status;
 
-    @OneToOne(() => Address, (address) => address.employee, { cascade: true })
+    @OneToOne(() => Address, (address) => address.employee, { cascade: true, nullable: false })
+    @JoinColumn()
     address: Address;
-
-    @ManyToOne(() => Role, { nullable: true })
-    role: Role
 
     @OneToOne(() => Employee, (employee) => employee.referredBy)
     @JoinColumn()

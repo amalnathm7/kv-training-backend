@@ -55,8 +55,8 @@ class EmployeeService {
         }
 
         const newAddress = new Address();
-        newAddress.addressLine1 = address.addressLine1;
-        newAddress.addressLine2 = address.addressLine2;
+        newAddress.line1 = address.line1;
+        newAddress.line2 = address.line2;
         newAddress.city = address.city;
         newAddress.state = address.state;
         newAddress.country = address.country;
@@ -95,8 +95,8 @@ class EmployeeService {
         }
 
         if (updateEmployeeDto.address) {
-            employee.address.addressLine1 = updateEmployeeDto.address.addressLine1;
-            employee.address.addressLine2 = updateEmployeeDto.address.addressLine2;
+            employee.address.line1 = updateEmployeeDto.address.line1;
+            employee.address.line2 = updateEmployeeDto.address.line2;
             employee.address.city = updateEmployeeDto.address.city;
             employee.address.state = updateEmployeeDto.address.state;
             employee.address.country = updateEmployeeDto.address.country;
@@ -109,12 +109,15 @@ class EmployeeService {
     async loginEmployee(loginEmployeeDto: LoginEmployeeDto) {
         const employee = await this.employeeRepository.findEmployeeByEmail(loginEmployeeDto.email);
         if (!employee) {
-            throw new HttpException(401, "Incorrect username or password", "UNAUTHORIZED");
+            throw new HttpException(401, "Incorrect email", "UNAUTHORIZED");
         }
+
+        console.log(loginEmployeeDto.password);
+        console.log(employee.password);
 
         const result = await bcrypt.compare(loginEmployeeDto.password, employee.password);
         if (!result) {
-            throw new HttpException(401, "Incorrect username or password", "UNAUTHORIZED");
+            throw new HttpException(401, "Incorrect email or password", "UNAUTHORIZED");
         }
 
         const payload: jwtPayload = {

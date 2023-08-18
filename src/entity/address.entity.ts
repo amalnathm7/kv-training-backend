@@ -5,10 +5,10 @@ import Employee from "./employee.entity";
 @Entity()
 class Address extends AbstractEntity {
     @Column()
-    addressLine1: string;
+    line1: string;
 
     @Column()
-    addressLine2: string;
+    line2: string;
 
     @Column()
     city: string;
@@ -23,7 +23,6 @@ class Address extends AbstractEntity {
     pincode: string;
 
     @OneToOne(() => Employee, (employee) => employee.address)
-    @JoinColumn()
     employee: Employee
 }
 
