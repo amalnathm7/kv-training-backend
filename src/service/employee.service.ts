@@ -27,7 +27,7 @@ class EmployeeService {
     }
 
     async getEmployeeByUsername(username: string): Promise<Employee | null> {
-        const employee = await this.employeeRepository.findEmployeeByUsername(username);
+        const employee = await this.employeeRepository.findEmployeeByEmail(username);
         if (!employee) {
             throw new HttpException(404, "Employee not found", "NOT FOUND");
         }
@@ -35,10 +35,10 @@ class EmployeeService {
     }
 
     async createEmployee(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
-        const { name, username, password, joiningDate, experience, departmentId, address, status, roleId } = createEmployeeDto;
+        const { name, email, password, joiningDate, experience, departmentId, address, status, roleId } = createEmployeeDto;
         const newEmployee = new Employee();
         newEmployee.name = name;
-        newEmployee.username = username;
+        newEmployee.email = email;
         newEmployee.password = await bcrypt.hash(password, 10);
         newEmployee.joiningDate = joiningDate;
         newEmployee.experience = experience;
@@ -76,7 +76,7 @@ class EmployeeService {
         const employee = await this.getEmployeeById(id);
 
         employee.name = updateEmployeeDto.name;
-        employee.username = updateEmployeeDto.username;
+        employee.email = updateEmployeeDto.email;
         if (updateEmployeeDto.password) {
             employee.password = await bcrypt.hash(updateEmployeeDto.password, 10);
         }
@@ -107,7 +107,7 @@ class EmployeeService {
     }
 
     async loginEmployee(loginEmployeeDto: LoginEmployeeDto) {
-        const employee = await this.employeeRepository.findEmployeeByUsername(loginEmployeeDto.username);
+        const employee = await this.employeeRepository.findEmployeeByEmail(loginEmployeeDto.email);
         if (!employee) {
             throw new HttpException(401, "Incorrect username or password", "UNAUTHORIZED");
         }
@@ -119,7 +119,7 @@ class EmployeeService {
 
         const payload: jwtPayload = {
             name: employee.name,
-            username: employee.username,
+            email: employee.email,
             role: employee.role ? employee.role.id : ""
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });

@@ -2,7 +2,6 @@ import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsObject, IsString, Validat
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
-import { Index } from "typeorm";
 import { Status } from "../utils/status.enum";
 import { ValidateDto } from "./validate.dto";
 
@@ -12,13 +11,16 @@ class CreateEmployeeDto implements ValidateDto {
     name: string;
 
     @IsNotEmpty()
-    @Index({ unique: true })
     @IsString()
-    username: string;
+    email: string;
 
     @IsNotEmpty()
     @IsString()
     password: string
+
+    @IsNotEmpty()
+    @IsString()
+    phone: string
 
     @IsNotEmpty()
     @IsDateString()
@@ -45,6 +47,10 @@ class CreateEmployeeDto implements ValidateDto {
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
     roleId: string
+
+    @ValidateIf((obj) => obj.value !== undefined)
+    @IsString()
+    referrerId: string
 }
 
 export default CreateEmployeeDto;

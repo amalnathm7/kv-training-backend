@@ -2,7 +2,6 @@ import { IsDateString, IsEnum, IsNumber, IsObject, IsString, ValidateIf, Validat
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import UpdateAddressDto from "./update-address.dto";
-import { Index } from "typeorm";
 import { Status } from "../utils/status.enum";
 import { ValidateDto } from "./validate.dto";
 
@@ -13,12 +12,15 @@ class UpdateEmployeeDto implements ValidateDto {
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
-    @Index({ unique: true })
-    username: string;
+    email: string;
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
     password: string;
+
+    @ValidateIf((obj) => obj.value !== undefined)
+    @IsString()
+    phone: string
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsDateString()
@@ -45,6 +47,10 @@ class UpdateEmployeeDto implements ValidateDto {
     @ValidateIf((obj) => obj.value !== undefined)
     @IsEnum(Status)
     status: Status
+
+    @ValidateIf((obj) => obj.value !== undefined)
+    @IsString()
+    referrerId: string
 }
 
 export default UpdateEmployeeDto;

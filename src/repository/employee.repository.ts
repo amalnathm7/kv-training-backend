@@ -30,9 +30,9 @@ class EmployeeRepository {
         });
     }
 
-    findEmployeeByUsername(username: string): Promise<Employee | null> {
+    findEmployeeByEmail(email: string): Promise<Employee | null> {
         return this.employeeRepository.findOne({
-            where: { username },
+            where: { email },
             relations: {
                 address: true,
                 department: true,

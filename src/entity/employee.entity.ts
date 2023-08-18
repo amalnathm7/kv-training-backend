@@ -1,22 +1,26 @@
-import { Column, Entity, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import Address from "./address.entity";
 import { AbstractEntity } from "./abstract.entity";
 import { Status } from "../utils/status.enum";
 import Department from "./department.entity";
 import Role from "./role.entity";
 import { Exclude } from "class-transformer";
+import Referral from "./referral.entity";
 
 @Entity()
 class Employee extends AbstractEntity {
     @Column()
     name: string;
 
-    @Column()
-    username: string;
+    @Column({ unique: true })
+    email: string;
 
     @Exclude({ toPlainOnly: true })
     @Column()
     password: string
+
+    @Column()
+    phone: string
 
     @Column()
     joiningDate: string
@@ -35,6 +39,13 @@ class Employee extends AbstractEntity {
 
     @ManyToOne(() => Role, { nullable: true })
     role: Role
+
+    @OneToOne(() => Employee, (employee) => employee.referredBy)
+    @JoinColumn()
+    referredBy: Employee;
+
+    @OneToMany(() => Referral, (referral) => referral.referredBy)
+    referrals: Referral[]
 }
 
 export default Employee;
