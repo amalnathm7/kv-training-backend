@@ -5,6 +5,8 @@ import validateMiddleware from "../middleware/validate.middleware";
 import UpdateOpeningDto from "../dto/update-opening.dto";
 import { ResponseWithLog } from "../utils/response.with.log";
 import { JsonResponseUtil } from "../utils/json.response.util";
+import OpeningService from "../service/opening.service";
+import CreateOpeningDto from "../dto/create-opening.dto";
 
 class OpeningController {
     public router: express.Router;
@@ -61,7 +63,7 @@ class OpeningController {
     deleteOpening = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const openingId = req.params.id;
-            await this.openingService.deleteEmployee(openingId);
+            await this.openingService.deleteOpening(openingId);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);

@@ -1,6 +1,8 @@
 import CreateOpeningDto from "../dto/create-opening.dto";
+import UpdateOpeningDto from "../dto/update-opening.dto";
 import Opening from "../entity/opening.entity";
 import HttpException from "../exception/http.exception";
+import OpeningRepository from "../repository/opening.repository";
 import DepartmentService from "./department.service";
 import RoleService from "./role.service";
 
@@ -49,7 +51,7 @@ class OpeningService {
   async updateOpening(id: string, updateOpeningDto: UpdateOpeningDto):Promise<void>{
     const opening = await this.getOpeningById(id);
     opening.title = updateOpeningDto.title;
-    opening.descrption = updateOpeningDto.descrption;
+    opening.descrption = updateOpeningDto.description;
     opening.skills = updateOpeningDto.skills;
     opening.count = updateOpeningDto.count;
     opening.location = updateOpeningDto.location;
@@ -71,3 +73,5 @@ class OpeningService {
     this.openingRepository.deleteOpening(opening);
   }
 }
+
+export default OpeningService;
