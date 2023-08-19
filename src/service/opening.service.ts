@@ -4,7 +4,6 @@ import HttpException from "../exception/http.exception";
 import DepartmentService from "./department.service";
 import RoleService from "./role.service";
 
-
 class OpeningService {
   constructor(
     private openingRepository: OpeningRepository,
