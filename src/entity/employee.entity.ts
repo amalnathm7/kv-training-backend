@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import Address from "./address.entity";
 import { AbstractEntity } from "./abstract.entity";
-import { Status } from "../utils/status.enum";
+import { EmployeeStatus } from "../utils/status.enum";
 import Department from "./department.entity";
 import Role from "./role.entity";
 import { Exclude } from "class-transformer";
@@ -35,7 +35,7 @@ class Employee extends AbstractEntity {
     role: Role
 
     @Column()
-    status: Status;
+    status: EmployeeStatus;
 
     @OneToOne(() => Address, (address) => address.employee, { cascade: true, nullable: false })
     @JoinColumn()
