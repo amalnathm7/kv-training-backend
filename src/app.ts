@@ -9,6 +9,7 @@ import errorMiddleware from "./middleware/error.middleware";
 import { departmentRoute } from "./route/department.route";
 import { roleRoute } from "./route/role.route";
 import cors from "cors";
+import { fileRoute } from "./route/file.route";
 
 const server = express();
 server.use(cors());
@@ -17,6 +18,7 @@ server.use(loggerMiddleware);
 server.use('/api/roles', roleRoute);
 server.use('/employees', employeeRoute);
 server.use('/departments', departmentRoute);
+server.use('/files', fileRoute)
 server.use(errorMiddleware);
 
 const PORT = 3000;
