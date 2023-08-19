@@ -26,8 +26,8 @@ class EmployeeService {
         return employee;
     }
 
-    async getEmployeeByUsername(username: string): Promise<Employee | null> {
-        const employee = await this.employeeRepository.findEmployeeByEmail(username);
+    async getEmployeeByEmail(email: string): Promise<Employee | null> {
+        const employee = await this.employeeRepository.findEmployeeByEmail(email);
         if (!employee) {
             throw new HttpException(404, "Employee not found", "NOT FOUND");
         }
