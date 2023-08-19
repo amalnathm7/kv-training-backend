@@ -40,7 +40,7 @@ class UpdateReferralDto implements ValidateDto {
 
   @ValidateIf((obj) => obj.value !== undefined)
   @IsString()
-  referredBy: string;
+  referredById: string;
 
   @ValidateIf((obj) => obj.value !== undefined)
   @IsObject()
