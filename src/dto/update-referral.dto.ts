@@ -13,7 +13,7 @@ import CreateAddressDto from "./create-address.dto";
 import { Status } from "../utils/status.enum";
 import { ValidateDto } from "./validate.dto";
 
-class CreateReferralDto implements ValidateDto {
+class UpdateReferralDto implements ValidateDto {
   @ValidateIf((obj) => obj.value !== undefined)
   @IsString()
   name: string;
@@ -54,7 +54,7 @@ class CreateReferralDto implements ValidateDto {
 
   @ValidateIf((obj) => obj.value !== undefined)
   @IsString()
-  opening: string;
+  openingId: string;
 }
 
-export default CreateReferralDto;
+export default UpdateReferralDto;

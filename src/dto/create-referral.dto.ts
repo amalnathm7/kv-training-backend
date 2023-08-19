@@ -55,7 +55,7 @@ class CreateReferralDto implements ValidateDto {
 
   @IsNotEmpty()
   @IsString()
-  opening: string;
+  openingId: string;
 }
 
 export default CreateReferralDto;
