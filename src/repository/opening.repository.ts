@@ -4,7 +4,7 @@ import Opening from "../entity/opening.entity";
 class OpeningRepository {
     constructor(private openingRepository: Repository<Opening>) { }
 
-    findAllEmployees(offset: number, pageLength: number): Promise<[Opening[], number]> {
+    findAllOpenings(offset: number, pageLength: number): Promise<[Opening[], number]> {
         return this.openingRepository.findAndCount({
             order: {
                 createdAt: "asc",
@@ -28,11 +28,13 @@ class OpeningRepository {
         });
     }
 
-    saveEmployee(employee: Opening): Promise<Opening> {
-        return this.openingRepository.save(employee);
+    saveOpening(opening: Opening): Promise<Opening> {
+        return this.openingRepository.save(opening);
     }
 
-    deleteEmployee(employee: Opening): Promise<Opening> {
-        return this.openingRepository.softRemove(employee);
+    deleteOpening(opening: Opening): Promise<Opening> {
+        return this.openingRepository.softRemove(opening);
     }
 }
+
+export default OpeningRepository;
