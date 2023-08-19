@@ -16,6 +16,7 @@ class OpeningController {
         this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateOpeningDto), this.createOpening);
         this.router.get("/", authenticate, authorize, this.getAllOpenings);
         this.router.get("/:id", authenticate, authorize, this.getOpeningById);
+        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateOpeningDto), this.setReferral);
         this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateOpeningDto), this.updateOpening);
         this.router.delete("/:id", authenticate,superAuthorize, this.deleteOpening);
     }
@@ -45,6 +46,16 @@ class OpeningController {
         try {
             const newOpening = await this.openingService.createOpening(res.dto as CreateOpeningDto);
             JsonResponseUtil.sendJsonResponse201(res, newOpening);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    setReferral = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+        try {
+            const openingId = req.params.id;
+            await this.openingService.updateOpening(openingId, res.dto as UpdateOpeningDto);
+            JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
         }

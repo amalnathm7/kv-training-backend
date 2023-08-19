@@ -1,18 +1,16 @@
 import {
-  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
   IsObject,
   IsString,
-  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
-import { Status } from "../utils/status.enum";
 import { ValidateDto } from "./validate.dto";
+import { ReferralStatus } from "../utils/status.enum";
 
 class CreateReferralDto implements ValidateDto {
   @IsNotEmpty()
@@ -32,8 +30,8 @@ class CreateReferralDto implements ValidateDto {
   phone: string;
 
   @IsNotEmpty()
-  @IsString()
-  status: string;
+  @IsEnum(ReferralStatus)
+  status: ReferralStatus;
 
   @IsNotEmpty()
   @IsString()

@@ -10,7 +10,7 @@ import {
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
-import { Status } from "../utils/status.enum";
+import { EmployeeStatus, ReferralStatus } from "../utils/status.enum";
 import { ValidateDto } from "./validate.dto";
 
 class UpdateReferralDto implements ValidateDto {
@@ -31,8 +31,8 @@ class UpdateReferralDto implements ValidateDto {
   phone: string;
 
   @ValidateIf((obj) => obj.value !== undefined)
-  @IsString()
-  status: string;
+  @IsEnum(ReferralStatus)
+  status: ReferralStatus;
 
   @ValidateIf((obj) => obj.value !== undefined)
   @IsString()
