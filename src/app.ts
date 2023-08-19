@@ -10,6 +10,8 @@ import { departmentRoute } from "./route/department.route";
 import { roleRoute } from "./route/role.route";
 import cors from "cors";
 import { fileRoute } from "./route/file.route";
+import openingRoute from "./route/opening.route";
+import referralRoute from "./route/referral.route";
 
 const server = express();
 server.use(cors());
@@ -19,6 +21,8 @@ server.use('/api/roles', roleRoute);
 server.use('/employees', employeeRoute);
 server.use('/departments', departmentRoute);
 server.use('/files', fileRoute)
+server.use('/openings', openingRoute);
+server.use('/referrals', referralRoute);
 server.use(errorMiddleware);
 
 const PORT = 3000;

@@ -41,7 +41,7 @@ class CreateReferralDto implements ValidateDto {
 
   @IsNotEmpty()
   @IsString()
-  referredBy: string;
+  referredById: string;
 
   @IsNotEmpty()
   @IsObject()
