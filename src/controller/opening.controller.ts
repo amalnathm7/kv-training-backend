@@ -13,9 +13,9 @@ class OpeningController {
         this.router = express.Router();
         this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateOpeningDto), this.createOpening);
         this.router.get("/", authenticate, authorize, this.getAllOpenings);
-        this.router.get("/", authenticate, authorize, this.getOpeningById);
-        this.router.patch("/", authenticate, superAuthorize, validateMiddleware(UpdateOpeningDto), this.updateOpening);
-        this.router.delete("/", authenticate,superAuthorize, this.deleteOpening);
+        this.router.get("/:id", authenticate, authorize, this.getOpeningById);
+        this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateOpeningDto), this.updateOpening);
+        this.router.delete("/:id", authenticate,superAuthorize, this.deleteOpening);
     }
 
     getAllOpenings = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {

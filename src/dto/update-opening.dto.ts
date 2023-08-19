@@ -28,13 +28,13 @@ class UpdateOpeningDto implements ValidateDto {
 
     @ValidateIf((obj) => obj.value !== undefined)
     @ValidateNested({ each:true })
-    @IsInt()
-    departmentId: number;
+    @IsString()
+    departmentId: string;
 
     @ValidateIf((obj) => obj.value !== undefined)
     @ValidateNested({ each:true })
-    @IsInt()
-    roleId: number;
+    @IsString()
+    roleId: string;
 }
 
 export default UpdateOpeningDto;
