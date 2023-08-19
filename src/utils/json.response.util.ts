@@ -50,6 +50,10 @@ export class JsonResponseUtil {
         this.sendJsonResponse(204, "NO CONTENT", res, {});
     }
 
+    static sendJsonResponse400(res: ResponseWithLog, errors: Object) {
+        this.sendJsonResponse(400, "BAD REQUEST", res, {}, errors);
+    }
+
     static sendJsonResponse401(res: ResponseWithLog, errors: Object) {
         this.sendJsonResponse(401, "UNAUTHORIZED", res, {}, errors);
     }
