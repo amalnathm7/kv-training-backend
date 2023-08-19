@@ -27,7 +27,7 @@ class EmployeeController {
 
     getProfile = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const profile = await this.employeeService.getEmployeeByUsername(req.email);
+            const profile = await this.employeeService.getEmployeeByEmail(req.email);
             JsonResponseUtil.sendJsonResponse200(res, profile);
         } catch (error) {
             next(error);
