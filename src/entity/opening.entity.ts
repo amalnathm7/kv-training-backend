@@ -24,10 +24,10 @@ class Opening extends AbstractEntity {
     @Column()
     experience: number
 
-    @ManyToOne(() => Department, { nullable: true })
+    @ManyToOne(() => Department, { nullable: false })
     department: Department;
 
-    @ManyToOne(() => Role, { nullable: true })
+    @ManyToOne(() => Role, { nullable: false })
     role: Role
 
     @OneToMany(() => Referral, (referral) => referral.opening)
