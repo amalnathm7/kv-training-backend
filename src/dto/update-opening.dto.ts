@@ -27,12 +27,10 @@ class UpdateOpeningDto implements ValidateDto {
     experience: number;
 
     @ValidateIf((obj) => obj.value !== undefined)
-    @ValidateNested({ each:true })
     @IsString()
     departmentId: string;
 
     @ValidateIf((obj) => obj.value !== undefined)
-    @ValidateNested({ each:true })
     @IsString()
     roleId: string;
 }
