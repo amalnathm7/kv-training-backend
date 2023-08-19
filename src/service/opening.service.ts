@@ -66,6 +66,7 @@ class OpeningService {
         const department = await this.departmentService.getDepartmentById(updateOpeningDto.departmentId);
         opening.department = department;
     }
+    this.openingRepository.saveOpening(opening)
   }
 
   async deleteOpening(id: string): Promise<void> {
