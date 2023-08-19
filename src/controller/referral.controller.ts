@@ -69,7 +69,7 @@ class ReferralController {
     setReferral = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
             const referralId = req.params.id;
-            await this.referralService.updateReferral(referralId, req.role, res.dto as UpdateReferralDto);
+            await this.referralService.updateReferral(referralId, req.role, req.email, res.dto as UpdateReferralDto);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
@@ -79,7 +79,7 @@ class ReferralController {
     updateReferral = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
             const referralId = req.params.id;
-            await this.referralService.updateReferral(referralId, req.role, res.dto as UpdateReferralDto);
+            await this.referralService.updateReferral(referralId, req.role, req.email, res.dto as UpdateReferralDto);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
@@ -89,7 +89,7 @@ class ReferralController {
     deleteReferral = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
             const referralId = req.params.id;
-            await this.referralService.deleteReferral(referralId, req.role);
+            await this.referralService.deleteReferral(referralId, req.role, req.email);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
