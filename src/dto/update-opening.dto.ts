@@ -1,4 +1,4 @@
-import { IsInt, IsString, ValidateIf, ValidateNested } from "class-validator";
+import { IsInt, IsString, ValidateIf } from "class-validator";
 import { ValidateDto } from "./validate.dto";
 
 class UpdateOpeningDto implements ValidateDto {
