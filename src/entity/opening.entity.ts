@@ -10,7 +10,7 @@ class Opening extends AbstractEntity {
     title: string;
 
     @Column()
-    descrption: string;
+    description: string;
 
     @Column()
     skills: string

@@ -8,7 +8,7 @@ class CreateOpeningDto implements ValidateDto {
 
   @IsNotEmpty()
   @IsString()
-  descrption: string;
+  description: string;
 
   @IsNotEmpty()
   @IsString()

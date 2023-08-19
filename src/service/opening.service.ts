@@ -26,10 +26,10 @@ class OpeningService {
   }
 
   async createOpening(createOpeningDto: CreateOpeningDto): Promise<Opening> {
-    const { title, descrption, skills, count, location, experience, departmentId, roleId } = createOpeningDto;
+    const { title, description: description, skills, count, location, experience, departmentId, roleId } = createOpeningDto;
     const newOpening = new Opening();
     newOpening.title = title;
-    newOpening.descrption = descrption;
+    newOpening.description = description;
     newOpening.skills = skills;
     newOpening.count = count;
     newOpening.location = location;
@@ -47,7 +47,7 @@ class OpeningService {
   async updateOpening(id: string, updateOpeningDto: UpdateOpeningDto): Promise<void> {
     const opening = await this.getOpeningById(id);
     opening.title = updateOpeningDto.title;
-    opening.descrption = updateOpeningDto.description;
+    opening.description = updateOpeningDto.description;
     opening.skills = updateOpeningDto.skills;
     opening.count = updateOpeningDto.count;
     opening.location = updateOpeningDto.location;
