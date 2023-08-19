@@ -12,7 +12,7 @@ import CreateAddressDto from "./create-address.dto";
 import { ValidateDto } from "./validate.dto";
 import { ReferralStatus } from "../utils/status.enum";
 
-class CreateReferralDto implements ValidateDto {
+class SetReferralDto implements ValidateDto {
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -28,6 +28,10 @@ class CreateReferralDto implements ValidateDto {
   @IsNotEmpty()
   @IsString()
   phone: string;
+
+  @IsNotEmpty()
+  @IsEnum(ReferralStatus)
+  status: ReferralStatus;
 
   @IsNotEmpty()
   @IsString()
@@ -52,4 +56,5 @@ class CreateReferralDto implements ValidateDto {
   openingId: string;
 }
 
-export default CreateReferralDto;
+export default SetReferralDto;
+
