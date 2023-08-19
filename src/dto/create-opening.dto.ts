@@ -26,11 +26,11 @@ class CreateOpeningDto implements ValidateDto {
   @IsNumber()
   experience: number;
 
-  @ValidateIf((obj) => obj.value !== undefined)
+  @IsNotEmpty()
   @IsString()
   departmentId: string;
 
-  @ValidateIf((obj) => obj.value !== undefined)
+  @IsNotEmpty()
   @IsString()
   roleId: string;
 }
