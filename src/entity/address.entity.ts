@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { AbstractEntity } from "./abstract.entity";
 import Employee from "./employee.entity";
+import Referral from "./referral.entity";
 
 @Entity()
 class Address extends AbstractEntity {
@@ -24,6 +25,9 @@ class Address extends AbstractEntity {
 
     @OneToOne(() => Employee, (employee) => employee.address)
     employee: Employee
+
+    @OneToOne(() => Referral, (referral) => referral.address)
+    referral: Referral
 }
 
 export default Address;
