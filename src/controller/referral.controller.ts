@@ -66,7 +66,7 @@ class ReferralController {
     setReferral = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const referralId = req.params.id;
-            await this.referralService.updateEmployee(referralId, res.dto as UpdateReferralDto);
+            await this.referralService.updateReferral(referralId, res.dto as UpdateReferralDto);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
@@ -76,7 +76,7 @@ class ReferralController {
     updateReferral = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const referralId = req.params.id;
-            await this.referralService.updateEmployee(referralId, res.dto as UpdateReferralDto);
+            await this.referralService.updateReferral(referralId, res.dto as UpdateReferralDto);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);

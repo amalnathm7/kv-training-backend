@@ -81,7 +81,7 @@ class ReferralService {
         this.referralRepository.deleteReferral(referral);
     }
 
-    async updateEmployee(id: string, updateReferralDto: UpdateReferralDto): Promise<void> {
+    async updateReferral(id: string, updateReferralDto: UpdateReferralDto): Promise<void> {
         const referral = await this.getReferralById(id);
 
         referral.name = updateReferralDto.name;
