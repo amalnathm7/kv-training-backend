@@ -1,11 +1,12 @@
-import { Repository } from "typeorm";
+import { FindOptionsWhere, Repository } from "typeorm";
 import Referral from "../entity/referral.entity";
 
 class ReferralRepository {
     constructor(private referralRepository: Repository<Referral>) { }
 
-    findAllReferrals(offset: number, pageLength: number): Promise<[Referral[], number]> {
+    findAllReferrals(offset: number, pageLength: number, where: FindOptionsWhere<Referral>): Promise<[Referral[], number]> {
         return this.referralRepository.findAndCount({
+            where,
             order: {
                 createdAt: "asc",
             },

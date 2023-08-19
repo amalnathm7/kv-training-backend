@@ -1,26 +1,27 @@
 import express, { NextFunction } from "express";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import authenticate from "../middleware/authenticate.middleware";
-import { authorize, superAuthorize } from "../middleware/authorize.middleware";
+import { authorize } from "../middleware/authorize.middleware";
 import { ResponseWithLog } from "../utils/response.with.log";
 import validateMiddleware from "../middleware/validate.middleware";
 import { RequestWithUser } from "../utils/request.with.user";
 import CreateReferralDto from "../dto/create-referral.dto";
 import UpdateReferralDto from "../dto/update-referral.dto";
 import ReferralService from "../service/referral.service";
+import SetReferralDto from "../dto/set-referral.dto";
 
 class ReferralController {
     public router: express.Router;
 
     constructor(private referralService: ReferralService) {
         this.router = express.Router();
-        this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateReferralDto), this.createReferral);
+        this.router.post("/", authenticate, authorize, validateMiddleware(CreateReferralDto), this.createReferral);
         this.router.get("/", authenticate, authorize, this.getAllReferrals);
         this.router.get("/me", authenticate, this.getMyReferrals);
         this.router.get("/:id", authenticate, authorize, this.getReferralById);
-        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateReferralDto), this.setReferral);
-        this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateReferralDto), this.updateReferral);
-        this.router.delete("/:id", authenticate, superAuthorize, this.deleteReferral);
+        this.router.put("/:id", authenticate, authorize, validateMiddleware(SetReferralDto), this.setReferral);
+        this.router.patch("/:id", authenticate, authorize, validateMiddleware(UpdateReferralDto), this.updateReferral);
+        this.router.delete("/:id", authenticate, authorize, this.deleteReferral);
     }
 
     getMyReferrals = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
@@ -34,9 +35,11 @@ class ReferralController {
 
     getAllReferrals = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const offset = Number(req.query.offset ? req.query.offset : 0);
-            const pageLength = Number(req.query.length ? req.query.length : 10);
-            const referrals = await this.referralService.getAllReferrals(offset, pageLength);
+            const offset = Number(req.query.offset ?? 0);
+            const pageLength = Number(req.query.length ?? 0);
+            const role = (req.query.role ?? '') as string;
+            const email = (req.query.email ?? '') as string;
+            const referrals = await this.referralService.getAllReferrals(offset, pageLength, email, role);
             referrals.push(offset);
             JsonResponseUtil.sendJsonResponse200(res, referrals);
         } catch (error) {
@@ -63,30 +66,30 @@ class ReferralController {
         }
     }
 
-    setReferral = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+    setReferral = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
             const referralId = req.params.id;
-            await this.referralService.updateReferral(referralId, res.dto as UpdateReferralDto);
+            await this.referralService.updateReferral(referralId, req.role, res.dto as UpdateReferralDto);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
         }
     }
 
-    updateReferral = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+    updateReferral = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
             const referralId = req.params.id;
-            await this.referralService.updateReferral(referralId, res.dto as UpdateReferralDto);
+            await this.referralService.updateReferral(referralId, req.role, res.dto as UpdateReferralDto);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
         }
     }
 
-    deleteReferral = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+    deleteReferral = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const referral = req.params.id;
-            await this.referralService.deleteReferral(referral);
+            const referralId = req.params.id;
+            await this.referralService.deleteReferral(referralId, req.role);
             JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);

@@ -7,6 +7,9 @@ import CreateReferralDto from "../dto/create-referral.dto";
 import UpdateReferralDto from "../dto/update-referral.dto";
 import EmployeeService from "./employee.service";
 import OpeningService from "../service/opening.service";
+import { ReferralStatus } from "../utils/status.enum";
+import { PermissionLevel } from "../utils/permission.level.enum";
+import { Like } from "typeorm";
 
 class ReferralService {
     constructor(
@@ -16,8 +19,14 @@ class ReferralService {
         private roleService: RoleService
     ) { }
 
-    getAllReferrals(offset: number, pageLength: number): Promise<[Referral[], number]> {
-        return this.referralRepository.findAllReferrals(offset, pageLength);
+    getAllReferrals(offset: number, pageLength: number, email: string, role: string): Promise<[Referral[], number]> {
+        const whereClause = {
+            email: Like(`%${email}%`),
+            role: {
+                role: Like(`%${role}%`)
+            }
+        }
+        return this.referralRepository.findAllReferrals(offset, pageLength, whereClause);
     }
 
     async getReferralById(id: string): Promise<Referral | null> {
@@ -45,12 +54,12 @@ class ReferralService {
     }
 
     async createReferral(createReferralDto: CreateReferralDto): Promise<Referral> {
-        const { name, email, experience, address, status, roleId, phone, openingId, referredById, resume } = createReferralDto;
+        const { name, email, experience, address, roleId, phone, openingId, referredById, resume } = createReferralDto;
         const newReferral = new Referral();
         newReferral.name = name;
         newReferral.email = email;
         newReferral.experience = experience;
-        newReferral.status = status;
+        newReferral.status = ReferralStatus.RECEIVED;
         newReferral.phone = phone;
         newReferral.resume = resume;
 
@@ -75,13 +84,17 @@ class ReferralService {
         return this.referralRepository.saveReferral(newReferral);
     }
 
-    async deleteReferral(id: string): Promise<void> {
+    async deleteReferral(id: string, roleId: string): Promise<void> {
         const referral = await this.getReferralById(id);
+        const role = await this.roleService.getRole(roleId);
+        if (referral.status !== ReferralStatus.RECEIVED && role.permissionLevel !== PermissionLevel.SUPER) {
+            throw new HttpException(403, "Candidate has been moved to furthur stages", "Forbidden");
+        }
 
         this.referralRepository.deleteReferral(referral);
     }
 
-    async updateReferral(id: string, updateReferralDto: UpdateReferralDto): Promise<void> {
+    async updateReferral(id: string, roleId: string, updateReferralDto: UpdateReferralDto): Promise<void> {
         const referral = await this.getReferralById(id);
 
         referral.name = updateReferralDto.name;
@@ -89,7 +102,11 @@ class ReferralService {
         referral.experience = updateReferralDto.experience;
         referral.status = updateReferralDto.status;
         referral.phone = updateReferralDto.phone;
-        referral.status = updateReferralDto.status;
+
+        const role = await this.roleService.getRole(roleId);
+        if (role.permissionLevel === PermissionLevel.SUPER) {
+            referral.status = updateReferralDto.status;
+        }
 
         if (updateReferralDto.roleId) {
             const role = await this.roleService.getRole(updateReferralDto.roleId);
