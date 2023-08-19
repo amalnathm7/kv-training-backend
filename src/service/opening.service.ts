@@ -17,7 +17,6 @@ class OpeningService {
   }
 
   async getOpeningById (id: string): Promise<Opening | null> {
-
     const opening = await this.openingRepository.findOpeningById(id);
     if(!opening){
         throw new HttpException(404,"Opening not found","NOT FOUND");
@@ -26,7 +25,6 @@ class OpeningService {
   }
 
   async createOpening(createOpeningDto: CreateOpeningDto): Promise <Opening>{
-
     const { title, descrption, skills, count, location, experience, departmentId, roleId} = createOpeningDto;
     const newOpening = new Opening();
     newOpening.title = title;
@@ -50,7 +48,6 @@ class OpeningService {
   }
   
   async updateOpening(id: string, updateOpeningDto: UpdateOpeningDto):Promise<void>{
-
     const opening = await this.getOpeningById(id);
     opening.title = updateOpeningDto.title;
     opening.descrption = updateOpeningDto.descrption;
@@ -71,8 +68,7 @@ class OpeningService {
   }
 
   async deleteOpening(id: string): Promise<void> {
-    
     const opening = await this.getOpeningById(id);
     this.openingRepository.deleteOpening(opening);
-}
+  }
 }
