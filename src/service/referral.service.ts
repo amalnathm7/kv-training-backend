@@ -28,7 +28,7 @@ class ReferralService {
         return referral;
     }
 
-    async getReferralByEmail(email: string): Promise<Referral[] | null> {
+    async getReferralsByEmail(email: string): Promise<Referral[]> {
         const referral = await this.referralRepository.findReferralsByEmail(email);
         if (!referral) {
             throw new HttpException(404, "Referrals not found", "NOT FOUND");
@@ -36,8 +36,8 @@ class ReferralService {
         return referral;
     }
 
-    async getReferralsReferredByEmail(email: string): Promise<Referral[] | null> {
-        const referrals = await this.referralRepository.findReferralsReferredById(email);
+    async getReferralsReferredByEmail(email: string): Promise<Referral[]> {
+        const referrals = await this.referralRepository.findReferralsReferredByEmail(email);
         if (!referrals) {
             throw new HttpException(404, "Referrals not found", "NOT FOUND");
         }

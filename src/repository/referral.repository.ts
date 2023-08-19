@@ -32,7 +32,7 @@ class ReferralRepository {
         });
     }
 
-    findReferralsByEmail(email: string): Promise<Referral[] | null> {
+    findReferralsByEmail(email: string): Promise<Referral[]> {
         return this.referralRepository.find({
             where: { email },
             relations: {
@@ -44,7 +44,7 @@ class ReferralRepository {
         });
     }
 
-    findReferralsReferredById(email: string): Promise<Referral[] | null> {
+    findReferralsReferredByEmail(email: string): Promise<Referral[]> {
         return this.referralRepository.find({
             where: { 
                 referredBy: {
