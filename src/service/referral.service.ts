@@ -103,8 +103,8 @@ class ReferralService {
     async deleteReferral(id: string, roleId: string, email: string): Promise<void> {
         const referral = await this.getReferralById(id);
         const role = await this.roleService.getRole(roleId);
-
-        if (referral.referredBy.email !== email || role.permissionLevel !== PermissionLevel.SUPER) {
+    
+        if (referral.referredBy.email !== email && role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
         }
 
@@ -118,8 +118,8 @@ class ReferralService {
     async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<void> {
         const referral = await this.getReferralById(id);
         const role = await this.roleService.getRole(roleId);
-
-        if (referral.referredBy.email !== email || role.permissionLevel !== PermissionLevel.SUPER) {
+    
+        if (referral.referredBy.email !== email && role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
         }
 

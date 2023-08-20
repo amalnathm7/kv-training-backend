@@ -4,7 +4,6 @@ import OpeningService from "../../service/opening.service";
 import Opening from "../../entity/opening.entity";
 import { departmentService } from "../../route/department.route";
 import { roleService } from "../../route/role.route";
-import Employee from "../../entity/employee.entity";
 import HttpException from "../../exception/http.exception";
 import Department from "../../entity/department.entity";
 import { when } from "jest-when";
