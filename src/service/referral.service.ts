@@ -10,7 +10,6 @@ import OpeningService from "../service/opening.service";
 import { ReferralStatus } from "../utils/status.enum";
 import { PermissionLevel } from "../utils/permission.level.enum";
 import { Like } from "typeorm";
-import OpeningRepository from "../repository/opening.repository";
 
 class ReferralService {
     constructor(
@@ -59,20 +58,15 @@ class ReferralService {
 
         
         const referrals = await this.referralRepository.findReferralsByEmail(email)
-        let referralWithSameRole;
         if (referrals){
-            const previousopeningId = await this.openingService.getOpeningById(openingId);
-            if (previousopeningId){
-                referralWithSameRole = referrals.find((referral)=>referral.role.id == roleId)
-                if (referralWithSameRole){
-                    let currentDate = new Date() as any
-                    const currentDateMonth = currentDate.getMonth();
-                    const oldDateMonth = referralWithSameRole.createdAt.getMonth();
-                    if (currentDateMonth - oldDateMonth < 6)
-                    {
-                        console.log("not created");
-                        throw new HttpException(409,"Cannot create a referral for the same role for the same person within 6 months","NOT CREATED")
-                    }
+            const referralWithSameRole = referrals.find((referral)=>referral.role.id == roleId)
+            if (referralWithSameRole){
+                let currentDate = new Date() as any
+                const currentDateMonth = currentDate.getMonth();
+                const oldDateMonth = referralWithSameRole.createdAt.getMonth();
+                if (currentDateMonth - oldDateMonth < 6)
+                {
+                    throw new HttpException(409,"Cannot create a referral for the same role for the same person within 6 months","NOT CREATED")
                 }
             }
         }
