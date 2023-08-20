@@ -17,7 +17,7 @@ const server = express();
 server.use(cors());
 server.use(express.json());
 server.use(loggerMiddleware);
-server.use('/api/roles', roleRoute);
+server.use('/roles', roleRoute);
 server.use('/employees', employeeRoute);
 server.use('/departments', departmentRoute);
 server.use('/files', fileRoute)
