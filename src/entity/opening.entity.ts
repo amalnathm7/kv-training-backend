@@ -3,6 +3,7 @@ import { AbstractEntity } from "./abstract.entity";
 import Department from "./department.entity";
 import Role from "./role.entity";
 import Referral from "./referral.entity";
+import { instanceToPlain } from "class-transformer";
 
 @Entity()
 class Opening extends AbstractEntity {
@@ -32,6 +33,12 @@ class Opening extends AbstractEntity {
 
     @OneToMany(() => Referral, (referral) => referral.opening)
     referrals: Referral[]
+
+    toJSON() {
+        const plain = instanceToPlain(this);
+        plain.createdAt = this.createdAt;
+        return plain;
+    }
 }
 
 export default Opening;
