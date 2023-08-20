@@ -56,17 +56,16 @@ class ReferralService {
     async createReferral(createReferralDto: CreateReferralDto): Promise<Referral> {
         const { name, email, experience, address, roleId, phone, openingId, referredById, resume } = createReferralDto;
 
-        
+
         const referrals = await this.referralRepository.findReferralsByEmail(email)
-        if (referrals){
-            const referralWithSameRole = referrals.find((referral)=>referral.role.id == roleId)
-            if (referralWithSameRole){
-                let currentDate = new Date() as any
+        if (referrals) {
+            const referralWithSameRole = referrals.find((referral) => referral.role.id == roleId)
+            if (referralWithSameRole) {
+                let currentDate = new Date();
                 const currentDateMonth = currentDate.getMonth();
                 const oldDateMonth = referralWithSameRole.createdAt.getMonth();
-                if (currentDateMonth - oldDateMonth < 6)
-                {
-                    throw new HttpException(409,"Cannot create a referral for the same role for the same person within 6 months","NOT CREATED")
+                if (currentDateMonth - oldDateMonth < 6) {
+                    throw new HttpException(409, "Cannot create a referral for the same role for the same person within 6 months", "NOT CREATED")
                 }
             }
         }
@@ -104,7 +103,7 @@ class ReferralService {
     async deleteReferral(id: string, roleId: string, email: string): Promise<void> {
         const referral = await this.getReferralById(id);
         const role = await this.roleService.getRole(roleId);
-    
+
         if (referral.referredBy.email !== email || role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
         }
@@ -119,7 +118,7 @@ class ReferralService {
     async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<void> {
         const referral = await this.getReferralById(id);
         const role = await this.roleService.getRole(roleId);
-    
+
         if (referral.referredBy.email !== email || role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
         }

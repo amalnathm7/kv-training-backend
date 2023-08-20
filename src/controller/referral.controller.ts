@@ -15,7 +15,7 @@ class ReferralController {
 
     constructor(private referralService: ReferralService) {
         this.router = express.Router();
-        this.router.post("/",authenticate,authorize, validateMiddleware(CreateReferralDto), this.createReferral);
+        this.router.post("/", authenticate, authorize, validateMiddleware(CreateReferralDto), this.createReferral);
         this.router.get("/", authenticate, authorize, this.getAllReferrals);
         this.router.get("/me", authenticate, this.getMyReferrals);
         this.router.get("/:id", authenticate, authorize, this.getReferralById);
