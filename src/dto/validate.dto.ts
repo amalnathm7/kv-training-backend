@@ -1,1 +1,1 @@
-export interface ValidateDto { }
+export interface ValidateDto {}
