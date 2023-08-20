@@ -130,6 +130,47 @@ describe("Opening Service Test", () => {
             const referral = await referralService.createReferral(createReferralDto);
             expect(referral).toStrictEqual({id:1})
         });
+
+        test("Failure case: Referral within six months", () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({id: 1});
+            referralRepository.saveReferral = mockFunction1;
+
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce(new Role());
+            roleService.getRole = mockFunction2;
+
+            const mockFunction3 = jest.fn();
+            mockFunction3.mockResolvedValueOnce(new Employee());
+            employeeService.getEmployeeById = mockFunction3;
+
+            const mockFunction4 = jest.fn();
+            mockFunction4.mockResolvedValueOnce(new Opening());
+            openingService.getOpeningById = mockFunction4
+
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce([{role: {id: "1"}, createdAt: new Date()}]);
+            referralRepository.findReferralsByEmail = mockFunction5;   
+            
+            const createReferralDto = plainToInstance(CreateReferralDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                referredById: "1",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(async() => await referralService.createReferral(createReferralDto)).rejects.toThrowError(HttpException);
+        });
     });
 
     describe('deleteOpening', () => {
