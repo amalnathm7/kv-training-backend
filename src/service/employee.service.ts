@@ -35,10 +35,11 @@ class EmployeeService {
     }
 
     async createEmployee(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
-        const { name, email, password, joiningDate, experience, departmentId, address, status, roleId } = createEmployeeDto;
+        const { name, email, phone, password, joiningDate, experience, departmentId, address, status, roleId } = createEmployeeDto;
         const newEmployee = new Employee();
         newEmployee.name = name;
         newEmployee.email = email;
+        newEmployee.phone = phone;
         newEmployee.password = await bcrypt.hash(password, 10);
         newEmployee.joiningDate = joiningDate;
         newEmployee.experience = experience;
@@ -77,6 +78,7 @@ class EmployeeService {
 
         employee.name = updateEmployeeDto.name;
         employee.email = updateEmployeeDto.email;
+        employee.phone = updateEmployeeDto.phone;
         if (updateEmployeeDto.password) {
             employee.password = await bcrypt.hash(updateEmployeeDto.password, 10);
         }
