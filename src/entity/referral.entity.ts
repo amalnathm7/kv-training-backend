@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import Address from "./address.entity";
 import { AbstractEntity } from "./abstract.entity";
 import Role from "./role.entity";
@@ -29,7 +29,8 @@ class Referral extends AbstractEntity {
     @ManyToOne(() => Employee)
     referredBy: Employee;
 
-    @OneToOne(() => Address, (address) => address.employee, { cascade: true })
+    @OneToOne(() => Address, (address) => address.employee, { cascade: true, nullable: false })
+    @JoinColumn()
     address: Address;
 
     @ManyToOne(() => Role)
