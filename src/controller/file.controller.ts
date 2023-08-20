@@ -22,7 +22,7 @@ class FileController {
                 throw new HttpException(400, 'No file selected', 'BAD REQUEST');
             }
 
-            JsonResponseUtil.sendJsonResponse200(res, { resume: req.filePath });
+            JsonResponseUtil.sendJsonResponse200(res, { file: req.filePath });
         } catch (error) {
             next(error);
         }
