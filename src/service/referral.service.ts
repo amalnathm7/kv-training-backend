@@ -9,7 +9,8 @@ import EmployeeService from "./employee.service";
 import OpeningService from "../service/opening.service";
 import { ReferralStatus } from "../utils/status.enum";
 import { PermissionLevel } from "../utils/permission.level.enum";
-import { Like } from "typeorm";
+import { ILike } from "typeorm";
+import UpdateOpeningDto from "../dto/update-opening.dto";
 
 class ReferralService {
     constructor(
@@ -19,12 +20,16 @@ class ReferralService {
         private roleService: RoleService
     ) { }
 
-    getAllReferrals(offset: number, pageLength: number, email: string, role: string): Promise<[Referral[], number]> {
+    getAllReferrals(offset: number, pageLength: number, email: string, role: string, openingId: string): Promise<[Referral[], number]> {
         const whereClause = {
-            email: Like(`%${email}%`),
+            email: ILike(`%${email}%`),
             role: {
-                role: Like(`%${role}%`)
-            }
+                role: ILike(`%${role}%`)
+            },
+            opening: {}
+        }
+        if (openingId) {
+            whereClause.opening = { id: Number(openingId) }
         }
         return this.referralRepository.findAllReferrals(offset, pageLength, whereClause);
     }
@@ -56,7 +61,6 @@ class ReferralService {
     async createReferral(createReferralDto: CreateReferralDto): Promise<Referral> {
         const { name, email, experience, address, roleId, phone, openingId, referredById, resume } = createReferralDto;
 
-
         const referrals = await this.referralRepository.findReferralsByEmail(email)
         if (referrals) {
             const referralWithSameRole = referrals.find((referral) => referral.role.id == roleId)
@@ -69,7 +73,6 @@ class ReferralService {
                 }
             }
         }
-
 
         const newReferral = new Referral();
         newReferral.name = name;
@@ -126,10 +129,25 @@ class ReferralService {
         referral.name = updateReferralDto.name;
         referral.email = updateReferralDto.email;
         referral.experience = updateReferralDto.experience;
-        referral.status = updateReferralDto.status;
         referral.phone = updateReferralDto.phone;
 
+        const openingId = updateReferralDto.openingId ? updateReferralDto.openingId : referral.opening.id;
+        const opening = await this.openingService.getOpeningById(openingId);
+        if (updateReferralDto.openingId) {
+            referral.opening = opening;
+        }
+
         if (role.permissionLevel === PermissionLevel.SUPER) {
+            if (referral.status !== ReferralStatus.HIRED && updateReferralDto.status === ReferralStatus.HIRED) {
+                if (opening.count <= 0) {
+                    throw new HttpException(403, "No more openings available for this position", "Forbidden");
+                }
+                const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
+
+                openingUpdateDto.count--;
+                
+                await this.openingService.updateOpening(opening.id, openingUpdateDto);
+            }
             referral.status = updateReferralDto.status;
         }
 
@@ -141,11 +159,6 @@ class ReferralService {
         if (updateReferralDto.referredById) {
             const referredBy = await this.employeeService.getEmployeeById(updateReferralDto.referredById);
             referral.referredBy = referredBy;
-        }
-
-        if (updateReferralDto.openingId) {
-            const opening = await this.openingService.getOpeningById(updateReferralDto.openingId);
-            referral.opening = opening;
         }
 
         if (updateReferralDto.address) {
