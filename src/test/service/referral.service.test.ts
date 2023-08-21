@@ -14,6 +14,7 @@ import { roleService } from "../../route/role.route";
 import { PermissionLevel } from '../../utils/permission.level.enum';
 import { ReferralStatus } from '../../utils/status.enum';
 import UpdateReferralDto from '../../dto/update-referral.dto';
+import { ILike } from 'typeorm';
 
 describe("Opening Service Test", () => {
     let referralService: ReferralService;
@@ -35,11 +36,18 @@ describe("Opening Service Test", () => {
     });
 
     describe("Get All Referral",() => {
-        test("Success case", async() => {
+        test("Success case Without Opening ID", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([ {id:1} ]);
             referralRepository.findAllReferrals = mockFunction;
-            const referral = await referralService.getAllReferrals(0, 10, "email", "role");
+            const referral = await referralService.getAllReferrals(0, 10, "email", "role", '');
+            expect(referral).toStrictEqual([ {id:1} ]);
+        });
+        test("Success case With Opening ID", async() => {
+            const mockFunction = jest.fn();
+            mockFunction.mockResolvedValueOnce([ {id:1} ]);
+            referralRepository.findAllReferrals = mockFunction;
+            const referral = await referralService.getAllReferrals(0, 10, "email", "role", '1');
             expect(referral).toStrictEqual([ {id:1} ]);
         });
     })
@@ -273,6 +281,117 @@ describe("Opening Service Test", () => {
                 openingId: "1",
             });
             expect(async() => await referralService.updateReferral("1","1","email",updateReferralDto)).not.toThrowError();
+        });
+
+        test("Success case with HIRED status", async() => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({
+                    referredBy: {email: "email"},
+                    address: {
+                        addressLine1: "line 1",
+                        addressLine2: "line 2",
+                        city: "city",
+                        state: "state",
+                        pincode: "pincode"
+                    },
+                });
+            referralService.getReferralById = mockFunction1;
+    
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
+            roleService.getRole = mockFunction2;
+
+            const mockFunction3 = jest.fn();
+            mockFunction3.mockResolvedValueOnce(new Employee())
+            employeeService.getEmployeeById = mockFunction3;
+
+            const mockFunction4 = jest.fn();
+            mockFunction4.mockResolvedValueOnce({id: "1", count: 3, department: { id: "1" }, role: { id: "1" }})
+            openingService.getOpeningById = mockFunction4;
+
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce({id: "1"})
+            referralRepository.saveReferral = mockFunction5;
+            
+            const mockFunction6 = jest.fn();
+            mockFunction6.mockResolvedValueOnce({})
+            openingService.updateOpening = mockFunction6;
+            
+            const updateReferralDto = plainToInstance(UpdateReferralDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "Hired",
+                referredById: "1",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(async() => await referralService.updateReferral("1","1","email",updateReferralDto)).not.toThrowError();
+        });
+
+        test("Failure case with HIRED status and opening.count as 0", async() => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({
+                    referredBy: {email: "email"},
+                    status: 'Recieved',
+                    address: {
+                        addressLine1: "line 1",
+                        addressLine2: "line 2",
+                        city: "city",
+                        state: "state",
+                        pincode: "pincode"
+                    },
+                });
+            referralService.getReferralById = mockFunction1;
+    
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
+            roleService.getRole = mockFunction2;
+
+            const mockFunction3 = jest.fn();
+            mockFunction3.mockResolvedValueOnce(new Employee())
+            employeeService.getEmployeeById = mockFunction3;
+
+            const mockFunction4 = jest.fn();
+            mockFunction4.mockResolvedValueOnce({id: "1", count: 0, department: { id: "1" }, role: { id: "1" }})
+            openingService.getOpeningById = mockFunction4;
+
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce({id: "1"})
+            referralRepository.saveReferral = mockFunction5;
+            
+            const mockFunction6 = jest.fn();
+            mockFunction6.mockResolvedValueOnce({})
+            openingService.updateOpening = mockFunction6;
+            
+            const updateReferralDto = plainToInstance(UpdateReferralDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "Hired",
+                referredById: "1",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(async() => await referralService.updateReferral("1","1","email",updateReferralDto)).rejects.toThrowError(HttpException);
         });
 
         test("Failure case", async() => {
