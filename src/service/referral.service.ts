@@ -126,7 +126,6 @@ class ReferralService {
         referral.name = updateReferralDto.name;
         referral.email = updateReferralDto.email;
         referral.experience = updateReferralDto.experience;
-        referral.status = updateReferralDto.status;
         referral.phone = updateReferralDto.phone;
 
         if (role.permissionLevel === PermissionLevel.SUPER) {
