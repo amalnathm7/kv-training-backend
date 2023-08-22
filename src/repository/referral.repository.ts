@@ -1,4 +1,4 @@
-import { FindOptionsWhere, Repository } from "typeorm";
+import { FindOptionsWhere, IsNull, Not, Repository } from "typeorm";
 import Referral from "../entity/referral.entity";
 
 class ReferralRepository {
@@ -6,7 +6,10 @@ class ReferralRepository {
 
     findAllReferrals(offset: number, pageLength: number, where: FindOptionsWhere<Referral>): Promise<[Referral[], number]> {
         return this.referralRepository.findAndCount({
-            where,
+            where: {
+                ...where,
+                referredBy: Not(IsNull())
+            },
             order: {
                 createdAt: "asc",
             },
@@ -23,7 +26,10 @@ class ReferralRepository {
 
     findReferralById(id: string): Promise<Referral | null> {
         return this.referralRepository.findOne({
-            where: { id },
+            where: {
+                id,
+                referredBy: Not(IsNull())
+            },
             relations: {
                 address: true,
                 opening: true,
@@ -35,7 +41,10 @@ class ReferralRepository {
 
     findReferralsByEmail(email: string): Promise<Referral[]> {
         return this.referralRepository.find({
-            where: { email },
+            where: {
+                email,
+                referredBy: Not(IsNull())
+            },
             relations: {
                 address: true,
                 opening: true,
@@ -47,7 +56,7 @@ class ReferralRepository {
 
     findReferralsReferredByEmail(email: string): Promise<Referral[]> {
         return this.referralRepository.find({
-            where: { 
+            where: {
                 referredBy: {
                     email
                 }
