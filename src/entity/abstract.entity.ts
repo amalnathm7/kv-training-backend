@@ -2,7 +2,7 @@ import { Exclude, instanceToPlain } from "class-transformer";
 import { CreateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export class AbstractEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: string;
 
     @Exclude({ toPlainOnly: true })

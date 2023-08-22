@@ -1,12 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { PermissionLevel } from "../utils/permission.level.enum";
 import Employee from "./employee.entity";
+import { AbstractEntity } from "./abstract.entity";
 
 @Entity()
-class Role {
-    @PrimaryGeneratedColumn()
-    id: string
-
+class Role extends AbstractEntity {
     @Column()
     role: string
 
