@@ -4,7 +4,7 @@ import filesystem from 'fs';
 
 const folderPath = './uploads';
 const key = 'file';
-const maxSize = 2 * 1024 * 1024;
+const maxSize = 5 * 1024 * 1024;
 
 let storage = multer.diskStorage({
     destination: (req, file, callback) => {
