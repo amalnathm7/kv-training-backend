@@ -10,7 +10,7 @@ import Opening from '../../entity/opening.entity';
 import {openingService} from '../../route/opening.route';
 import { roleService } from "../../route/role.route";
 
-describe("Referral Service Test", () => {
+describe("Application Service Test", () => {
     let applicationService: ApplicationService;
     let candidateRepository: CandidateRepository;
 
@@ -28,7 +28,24 @@ describe("Referral Service Test", () => {
       );
     });
 
-    describe("Get Referral By ID", () => {
+    describe("Get All Applications",() => {
+        test("Success case Without Opening ID", async() => {
+            const mockFunction = jest.fn();
+            mockFunction.mockResolvedValueOnce([ {id:1} ]);
+            candidateRepository.findAllApplications = mockFunction;
+            const referral = await applicationService.getAllApplications(0, 10, "email", "role", "");
+            expect(referral).toStrictEqual([ {id:1} ]);
+        });
+        test("Success case With Opening ID", async() => {
+            const mockFunction = jest.fn();
+            mockFunction.mockResolvedValueOnce([ {id:1} ]);
+            candidateRepository.findAllApplications = mockFunction;
+            const referral = await applicationService.getAllApplications(0, 10, "email", "role", "");
+            expect(referral).toStrictEqual([ {id:1} ]);
+        });
+    })
+
+    describe("Application Referral By ID", () => {
         test("Success case", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce({ id: 1 });
@@ -44,7 +61,7 @@ describe("Referral Service Test", () => {
         });
     });
 
-    describe("Create Referral", () => {
+    describe("Create Application", () => {
         test("Success case", async() => {
             const mockFunction1 = jest.fn();
             mockFunction1.mockResolvedValueOnce({id: 1});

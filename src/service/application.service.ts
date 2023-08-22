@@ -7,6 +7,7 @@ import { CandidateStatus } from "../utils/status.enum";
 import { compareDateMonts } from "../utils/date.util";
 import CreateApplicationDto from "../dto/create-application.dto";
 import CandidateRepository from "../repository/candidate.repository";
+import { FindOptionsWhere, ILike } from "typeorm";
 
 class ApplicationService {
     constructor(
@@ -14,6 +15,20 @@ class ApplicationService {
         private openingService: OpeningService,
         private roleService: RoleService
     ) { }
+
+    getAllApplications(offset: number, pageLength: number, email: string, role: string, openingId: string): Promise<[Candidate[], number]> {
+        const whereClause: FindOptionsWhere<Candidate> = {
+            email: ILike(`%${email}%`),
+            role: {
+                role: ILike(`%${role}%`)
+            },
+            opening: {
+                id: openingId || null
+            }
+        }
+        return this.candidateRepository.findAllApplications(offset, pageLength, whereClause);
+    }
+
 
     async getApplicationById(id: string): Promise<Candidate | null> {
         const application = await this.candidateRepository.findApplicationById(id);
