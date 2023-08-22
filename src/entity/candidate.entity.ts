@@ -4,10 +4,10 @@ import { AbstractEntity } from "./abstract.entity";
 import Role from "./role.entity";
 import Employee from "./employee.entity";
 import Opening from "./opening.entity";
-import { ReferralStatus } from "../utils/status.enum";
+import { CandidateStatus } from "../utils/status.enum";
 
 @Entity()
-class Referral extends AbstractEntity {
+class Candidate extends AbstractEntity {
     @Column()
     name: string;
 
@@ -21,7 +21,7 @@ class Referral extends AbstractEntity {
     phone: string
 
     @Column()
-    status: ReferralStatus;
+    status: CandidateStatus;
 
     @Column()
     resume: string;
@@ -43,4 +43,4 @@ class Referral extends AbstractEntity {
     referralId: string;
 }
 
-export default Referral;
+export default Candidate;

@@ -2,7 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { AbstractEntity } from "./abstract.entity";
 import Department from "./department.entity";
 import Role from "./role.entity";
-import Referral from "./referral.entity";
+import Candidate from "./candidate.entity";
 import { instanceToPlain } from "class-transformer";
 
 @Entity()
@@ -31,8 +31,8 @@ class Opening extends AbstractEntity {
     @ManyToOne(() => Role, { nullable: false })
     role: Role
 
-    @OneToMany(() => Referral, (referral) => referral.opening)
-    referrals: Referral[]
+    @OneToMany(() => Candidate, (candidate) => candidate.opening)
+    candidates: Candidate[]
 
     toJSON() {
         const plain = instanceToPlain(this);

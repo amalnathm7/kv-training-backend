@@ -1,5 +1,4 @@
 import {
-  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -10,7 +9,6 @@ import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
 import { ValidateDto } from "./validate.dto";
-import { ReferralStatus } from "../utils/status.enum";
 
 class CreateReferralDto implements ValidateDto {
   @IsNotEmpty()

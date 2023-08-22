@@ -1,10 +1,10 @@
 import { FindOptionsWhere, IsNull, Not, Repository } from "typeorm";
-import Referral from "../entity/referral.entity";
+import Candidate from "../entity/candidate.entity";
 
-class ReferralRepository {
-    constructor(private referralRepository: Repository<Referral>) { }
+class CandidateRepository {
+    constructor(private referralRepository: Repository<Candidate>) { }
 
-    findAllReferrals(offset: number, pageLength: number, where: FindOptionsWhere<Referral>): Promise<[Referral[], number]> {
+    findAllReferrals(offset: number, pageLength: number, where: FindOptionsWhere<Candidate>): Promise<[Candidate[], number]> {
         return this.referralRepository.findAndCount({
             where: {
                 ...where,
@@ -24,7 +24,7 @@ class ReferralRepository {
         });
     }
 
-    findReferralById(id: string): Promise<Referral | null> {
+    findReferralById(id: string): Promise<Candidate | null> {
         return this.referralRepository.findOne({
             where: {
                 id,
@@ -39,7 +39,7 @@ class ReferralRepository {
         });
     }
 
-    findReferralsByEmail(email: string): Promise<Referral[]> {
+    findReferralsByEmail(email: string): Promise<Candidate[]> {
         return this.referralRepository.find({
             where: {
                 email,
@@ -54,7 +54,7 @@ class ReferralRepository {
         });
     }
 
-    findReferralsReferredByEmail(email: string): Promise<Referral[]> {
+    findReferralsReferredByEmail(email: string): Promise<Candidate[]> {
         return this.referralRepository.find({
             where: {
                 referredBy: {
@@ -70,13 +70,43 @@ class ReferralRepository {
         });
     }
 
-    saveReferral(referral: Referral): Promise<Referral> {
-        return this.referralRepository.save(referral);
+    saveCandidate(candidate: Candidate): Promise<Candidate> {
+        return this.referralRepository.save(candidate);
     }
 
-    deleteReferral(referral: Referral): Promise<Referral> {
-        return this.referralRepository.softRemove(referral);
+    deleteCandidate(candidate: Candidate): Promise<Candidate> {
+        return this.referralRepository.softRemove(candidate);
+    }
+
+    findApplicationById(id: string): Promise<Candidate | null> {
+        return this.referralRepository.findOne({
+            where: {
+                id,
+                referredBy: IsNull()
+            },
+            relations: {
+                address: true,
+                opening: true,
+                referredBy: true,
+                role: true
+            }
+        });
+    }
+
+    findApplicationsByEmail(email: string): Promise<Candidate[]> {
+        return this.referralRepository.find({
+            where: {
+                email,
+                referredBy: IsNull()
+            },
+            relations: {
+                address: true,
+                opening: true,
+                referredBy: true,
+                role: true
+            }
+        });
     }
 }
 
-export default ReferralRepository;
+export default CandidateRepository;

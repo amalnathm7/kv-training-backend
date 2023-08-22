@@ -4,7 +4,7 @@ export enum EmployeeStatus {
     INACTIVE = "Inactive"
 }
 
-export enum ReferralStatus {
+export enum CandidateStatus {
     RECEIVED = "Received",
     REVIEW = "Review",
     ROUND1 = "Round 1",
