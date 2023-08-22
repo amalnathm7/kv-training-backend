@@ -118,6 +118,18 @@ describe("Opening Service Test", () => {
             mockFunction4.mockResolvedValueOnce(new Opening());
             openingService.getOpeningById = mockFunction4
             
+            const currentDate = new Date();
+            const date12MonthsAgo = new Date();
+            date12MonthsAgo.setMonth(currentDate.getMonth() - 12);
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce([
+                {role: {id: "2"}, createdAt: currentDate},
+                {role: {id: "3"}, createdAt: currentDate},
+                {role: {id: "1"}, createdAt: date12MonthsAgo},
+                {role: {id: "1"}, createdAt: date12MonthsAgo}
+            ]);
+
+            referralRepository.findReferralsByEmail = mockFunction5;   
             const createReferralDto = plainToInstance(CreateReferralDto,{
                 name: "name",
                 email: "email",
@@ -156,8 +168,17 @@ describe("Opening Service Test", () => {
             mockFunction4.mockResolvedValueOnce(new Opening());
             openingService.getOpeningById = mockFunction4
 
+            const currentDate = new Date();
+            const date12MonthsAgo = new Date();
+            date12MonthsAgo.setMonth(currentDate.getMonth() - 12);
             const mockFunction5 = jest.fn();
-            mockFunction5.mockResolvedValueOnce([{role: {id: "1"}, createdAt: new Date()}]);
+            mockFunction5.mockResolvedValueOnce([
+                {role: {id: "2"}, createdAt: currentDate},
+                {role: {id: "3"}, createdAt: currentDate},
+                {role: {id: "1"}, createdAt: date12MonthsAgo},
+                {role: {id: "1"}, createdAt: currentDate},
+                {role: {id: "1"}, createdAt: date12MonthsAgo}
+            ]);
             referralRepository.findReferralsByEmail = mockFunction5;   
             
             const createReferralDto = plainToInstance(CreateReferralDto,{
