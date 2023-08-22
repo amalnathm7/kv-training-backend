@@ -12,7 +12,7 @@ import cors from "cors";
 import { fileRoute } from "./route/file.route";
 import openingRoute from "./route/opening.route";
 import referralRoute from "./route/referral.route";
-import applicatoinRoute from "./route/application.route";
+import applicationRoute from "./route/application.route";
 
 const server = express();
 server.use(cors());
@@ -24,7 +24,7 @@ server.use('/departments', departmentRoute);
 server.use('/files', fileRoute)
 server.use('/openings', openingRoute);
 server.use('/referrals', referralRoute);
-server.use('/applications', applicatoinRoute);
+server.use('/applications', applicationRoute);
 server.use(errorMiddleware);
 
 const PORT = 3000;
