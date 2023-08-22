@@ -9,7 +9,7 @@ import EmployeeService from "./employee.service";
 import OpeningService from "../service/opening.service";
 import { ReferralStatus } from "../utils/status.enum";
 import { PermissionLevel } from "../utils/permission.level.enum";
-import { ILike } from "typeorm";
+import { FindOptionsWhere, ILike } from "typeorm";
 import UpdateOpeningDto from "../dto/update-opening.dto";
 import { compareDateMonts } from "../utils/date.util";
 
@@ -22,15 +22,14 @@ class ReferralService {
     ) { }
 
     getAllReferrals(offset: number, pageLength: number, email: string, role: string, openingId: string): Promise<[Referral[], number]> {
-        const whereClause = {
+        const whereClause: FindOptionsWhere<Referral> = {
             email: ILike(`%${email}%`),
             role: {
                 role: ILike(`%${role}%`)
             },
-            opening: {}
-        }
-        if (openingId) {
-            whereClause.opening = { id: Number(openingId) }
+            opening: {
+                id: openingId || null
+            }
         }
         return this.referralRepository.findAllReferrals(offset, pageLength, whereClause);
     }
@@ -104,7 +103,7 @@ class ReferralService {
     async deleteReferral(id: string, roleId: string, email: string): Promise<void> {
         const referral = await this.getReferralById(id);
         const role = await this.roleService.getRole(roleId);
-    
+
         if (referral.referredBy.email !== email && role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
         }
@@ -119,7 +118,7 @@ class ReferralService {
     async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<void> {
         const referral = await this.getReferralById(id);
         const role = await this.roleService.getRole(roleId);
-    
+
         if (referral.referredBy.email !== email && role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
         }
@@ -143,7 +142,7 @@ class ReferralService {
                 const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
 
                 openingUpdateDto.count--;
-                
+
                 await this.openingService.updateOpening(opening.id, openingUpdateDto);
             }
             referral.status = updateReferralDto.status;
