@@ -26,7 +26,7 @@ class Referral extends AbstractEntity {
     @Column()
     resume: string;
 
-    @ManyToOne(() => Employee)
+    @ManyToOne(() => Employee, {nullable: true})
     referredBy: Employee;
 
     @OneToOne(() => Address, (address) => address.employee, { cascade: true, nullable: false })
@@ -38,6 +38,9 @@ class Referral extends AbstractEntity {
 
     @ManyToOne(() => Opening)
     opening: Opening;
+
+    @Column({ length: 6, default: () => "nanoid(6)", unique: true })
+    referralId: string;
 }
 
 export default Referral;
