@@ -5,7 +5,7 @@ import { EmployeeStatus } from "../utils/status.enum";
 import Department from "./department.entity";
 import Role from "./role.entity";
 import { Exclude } from "class-transformer";
-import Referral from "./referral.entity";
+import Candidate from "./candidate.entity";
 
 @Entity()
 class Employee extends AbstractEntity {
@@ -45,8 +45,8 @@ class Employee extends AbstractEntity {
     @JoinColumn()
     referredBy: Employee;
 
-    @OneToMany(() => Referral, (referral) => referral.referredBy)
-    referrals: Referral[]
+    @OneToMany(() => Candidate, (referral) => referral.referredBy)
+    referrals: Candidate[]
 }
 
 export default Employee;

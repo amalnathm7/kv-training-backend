@@ -1,13 +1,13 @@
 import Address from "../entity/address.entity";
 import HttpException from "../exception/http.exception";
 import RoleService from "./role.service";
-import ReferralRepository from "../repository/referral.repository";
-import Referral from "../entity/referral.entity";
+import CandidateRepository from "../repository/candidate.repository";
+import Candidate from "../entity/candidate.entity";
 import CreateReferralDto from "../dto/create-referral.dto";
 import UpdateReferralDto from "../dto/update-referral.dto";
 import EmployeeService from "./employee.service";
 import OpeningService from "../service/opening.service";
-import { ReferralStatus } from "../utils/status.enum";
+import { CandidateStatus } from "../utils/status.enum";
 import { PermissionLevel } from "../utils/permission.level.enum";
 import { FindOptionsWhere, ILike } from "typeorm";
 import UpdateOpeningDto from "../dto/update-opening.dto";
@@ -15,14 +15,14 @@ import { compareDateMonts } from "../utils/date.util";
 
 class ReferralService {
     constructor(
-        private referralRepository: ReferralRepository,
+        private candidateRepository: CandidateRepository,
         private employeeService: EmployeeService,
         private openingService: OpeningService,
         private roleService: RoleService
     ) { }
 
-    getAllReferrals(offset: number, pageLength: number, email: string, role: string, openingId: string): Promise<[Referral[], number]> {
-        const whereClause: FindOptionsWhere<Referral> = {
+    getAllReferrals(offset: number, pageLength: number, email: string, role: string, openingId: string): Promise<[Candidate[], number]> {
+        const whereClause: FindOptionsWhere<Candidate> = {
             email: ILike(`%${email}%`),
             role: {
                 role: ILike(`%${role}%`)
@@ -31,38 +31,38 @@ class ReferralService {
                 id: openingId || null
             }
         }
-        return this.referralRepository.findAllReferrals(offset, pageLength, whereClause);
+        return this.candidateRepository.findAllReferrals(offset, pageLength, whereClause);
     }
 
-    async getReferralById(id: string): Promise<Referral | null> {
-        const referral = await this.referralRepository.findReferralById(id);
+    async getReferralById(id: string): Promise<Candidate | null> {
+        const referral = await this.candidateRepository.findReferralById(id);
         if (!referral) {
             throw new HttpException(404, "Referral not found", "NOT FOUND");
         }
         return referral;
     }
 
-    async getReferralsByEmail(email: string): Promise<Referral[]> {
-        const referral = await this.referralRepository.findReferralsByEmail(email);
+    async getReferralsByEmail(email: string): Promise<Candidate[]> {
+        const referral = await this.candidateRepository.findReferralsByEmail(email);
         if (!referral) {
             throw new HttpException(404, "Referrals not found", "NOT FOUND");
         }
         return referral;
     }
 
-    async getReferralsReferredByEmail(email: string): Promise<Referral[]> {
-        const referrals = await this.referralRepository.findReferralsReferredByEmail(email);
+    async getReferralsReferredByEmail(email: string): Promise<Candidate[]> {
+        const referrals = await this.candidateRepository.findReferralsReferredByEmail(email);
         if (!referrals) {
             throw new HttpException(404, "Referrals not found", "NOT FOUND");
         }
         return referrals;
     }
 
-    async createReferral(createReferralDto: CreateReferralDto): Promise<Referral> {
+    async createReferral(createReferralDto: CreateReferralDto): Promise<Candidate> {
         const { name, email, experience, address, roleId, phone, openingId, referredById, resume } = createReferralDto;
 
-        const referrals = await this.referralRepository.findReferralsByEmail(email)
-        const referralsWithSameRole = referrals.filter((referral) => referral.role.id == roleId);
+        const referrals = await this.candidateRepository.findReferralsByEmail(email)
+        const referralsWithSameRole = referrals.filter((referral) => referral.role.id === roleId);
         let currentDate = new Date();
         referralsWithSameRole.forEach((referral) => {
             const isLessThan6Months = !compareDateMonts(currentDate, referral.createdAt, 6);
@@ -71,11 +71,11 @@ class ReferralService {
             }
         });
 
-        const newReferral = new Referral();
+        const newReferral = new Candidate();
         newReferral.name = name;
         newReferral.email = email;
         newReferral.experience = experience;
-        newReferral.status = ReferralStatus.RECEIVED;
+        newReferral.status = CandidateStatus.RECEIVED;
         newReferral.phone = phone;
         newReferral.resume = resume;
 
@@ -97,7 +97,7 @@ class ReferralService {
         newAddress.pincode = address.pincode;
         newReferral.address = newAddress;
 
-        return this.referralRepository.saveReferral(newReferral);
+        return this.candidateRepository.saveCandidate(newReferral);
     }
 
     async deleteReferral(id: string, roleId: string, email: string): Promise<void> {
@@ -108,11 +108,11 @@ class ReferralService {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
         }
 
-        if (referral.status !== ReferralStatus.RECEIVED && role.permissionLevel !== PermissionLevel.SUPER) {
+        if (referral.status !== CandidateStatus.RECEIVED && role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "Candidate has been moved to furthur stages", "Forbidden");
         }
 
-        this.referralRepository.deleteReferral(referral);
+        this.candidateRepository.deleteCandidate(referral);
     }
 
     async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<void> {
@@ -135,7 +135,7 @@ class ReferralService {
         }
 
         if (role.permissionLevel === PermissionLevel.SUPER) {
-            if (referral.status !== ReferralStatus.HIRED && updateReferralDto.status === ReferralStatus.HIRED) {
+            if (referral.status !== CandidateStatus.HIRED && updateReferralDto.status === CandidateStatus.HIRED) {
                 if (opening.count <= 0) {
                     throw new HttpException(403, "No more openings available for this position", "Forbidden");
                 }
@@ -167,7 +167,7 @@ class ReferralService {
             referral.address.pincode = updateReferralDto.address.pincode;
         }
 
-        this.referralRepository.saveReferral(referral);
+        this.candidateRepository.saveCandidate(referral);
     }
 }
 

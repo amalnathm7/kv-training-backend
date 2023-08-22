@@ -1,5 +1,4 @@
 import {
-  IsDateString,
   IsEnum,
   IsNumber,
   IsObject,
@@ -10,7 +9,7 @@ import {
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
-import { EmployeeStatus, ReferralStatus } from "../utils/status.enum";
+import { CandidateStatus } from "../utils/status.enum";
 import { ValidateDto } from "./validate.dto";
 
 class UpdateReferralDto implements ValidateDto {
@@ -31,8 +30,8 @@ class UpdateReferralDto implements ValidateDto {
   phone: string;
 
   @ValidateIf((obj) => obj.value !== undefined)
-  @IsEnum(ReferralStatus)
-  status: ReferralStatus;
+  @IsEnum(CandidateStatus)
+  status: CandidateStatus;
 
   @ValidateIf((obj) => obj.value !== undefined)
   @IsString()

@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import ReferralRepository from '../../repository/referral.repository';
+import CandidateRepository from '../../repository/candidate.repository';
 import ReferralService from '../../service/referral.service';
-import Referral from '../../entity/referral.entity';
+import Candidate from '../../entity/candidate.entity';
 import HttpException from '../../exception/http.exception';
 import CreateReferralDto from '../../dto/create-referral.dto';
 import { plainToInstance } from 'class-transformer';
@@ -12,23 +12,22 @@ import {employeeService} from '../../route/employee.route';
 import {openingService} from '../../route/opening.route';
 import { roleService } from "../../route/role.route";
 import { PermissionLevel } from '../../utils/permission.level.enum';
-import { ReferralStatus } from '../../utils/status.enum';
 import UpdateReferralDto from '../../dto/update-referral.dto';
-import { ILike } from 'typeorm';
+import { CandidateStatus } from '../../utils/status.enum';
 
-describe("Opening Service Test", () => {
+describe("Referral Service Test", () => {
     let referralService: ReferralService;
-    let referralRepository: ReferralRepository;
+    let candidateRepository: CandidateRepository;
 
     beforeAll(() => {
       const dataSource: DataSource = {
         getRepository: jest.fn(),
       } as unknown as DataSource;
-      referralRepository = new ReferralRepository(
-        dataSource.getRepository(Referral)
+      candidateRepository = new CandidateRepository(
+        dataSource.getRepository(Candidate)
       );
       referralService = new ReferralService(
-        referralRepository,
+        candidateRepository,
         employeeService,
         openingService,
         roleService
@@ -39,14 +38,14 @@ describe("Opening Service Test", () => {
         test("Success case Without Opening ID", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([ {id:1} ]);
-            referralRepository.findAllReferrals = mockFunction;
+            candidateRepository.findAllReferrals = mockFunction;
             const referral = await referralService.getAllReferrals(0, 10, "email", "role", '');
             expect(referral).toStrictEqual([ {id:1} ]);
         });
         test("Success case With Opening ID", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([ {id:1} ]);
-            referralRepository.findAllReferrals = mockFunction;
+            candidateRepository.findAllReferrals = mockFunction;
             const referral = await referralService.getAllReferrals(0, 10, "email", "role", '1');
             expect(referral).toStrictEqual([ {id:1} ]);
         });
@@ -56,14 +55,14 @@ describe("Opening Service Test", () => {
         test("Success case", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce({ id: 1 });
-            referralRepository.findReferralById = mockFunction;
+            candidateRepository.findReferralById = mockFunction;
             const referral = await referralService.getReferralById("1");
             expect(referral).toStrictEqual({ id: 1 });
         });
         test("Failure case", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce(null);
-            referralRepository.findReferralById = mockFunction;
+            candidateRepository.findReferralById = mockFunction;
             expect(async() => await referralService.getReferralById("1")).rejects.toThrowError(HttpException);
         });
     });
@@ -72,14 +71,14 @@ describe("Opening Service Test", () => {
         test("Success case", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce({ email: "email" });
-            referralRepository.findReferralsByEmail = mockFunction;
+            candidateRepository.findReferralsByEmail = mockFunction;
             const referral = await referralService.getReferralsByEmail("email");
             expect(referral).toStrictEqual({ email: "email" });
         });
         test("Failure case", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce(null);
-            referralRepository.findReferralsByEmail = mockFunction;
+            candidateRepository.findReferralsByEmail = mockFunction;
             expect(async() => await referralService.getReferralsByEmail("email")).rejects.toThrowError(HttpException);
         });
     });
@@ -88,14 +87,14 @@ describe("Opening Service Test", () => {
         test("Success case", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce({ email: "email" });
-            referralRepository.findReferralsReferredByEmail = mockFunction;
+            candidateRepository.findReferralsReferredByEmail = mockFunction;
             const referral = await referralService.getReferralsReferredByEmail("email");
             expect(referral).toStrictEqual({ email: "email" });
         });
         test("Failure case", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce(null);
-            referralRepository.findReferralsReferredByEmail = mockFunction;
+            candidateRepository.findReferralsReferredByEmail = mockFunction;
             expect(async() => await referralService.getReferralsReferredByEmail("email")).rejects.toThrowError(HttpException);
         });
     });
@@ -104,7 +103,7 @@ describe("Opening Service Test", () => {
         test("Success case", async() => {
             const mockFunction1 = jest.fn();
             mockFunction1.mockResolvedValueOnce({id: 1});
-            referralRepository.saveReferral = mockFunction1;
+            candidateRepository.saveCandidate = mockFunction1;
 
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce(new Role());
@@ -117,7 +116,7 @@ describe("Opening Service Test", () => {
             const mockFunction4 = jest.fn();
             mockFunction4.mockResolvedValueOnce(new Opening());
             openingService.getOpeningById = mockFunction4
-            
+
             const currentDate = new Date();
             const date12MonthsAgo = new Date();
             date12MonthsAgo.setMonth(currentDate.getMonth() - 12);
@@ -129,7 +128,7 @@ describe("Opening Service Test", () => {
                 {role: {id: "1"}, createdAt: date12MonthsAgo}
             ]);
 
-            referralRepository.findReferralsByEmail = mockFunction5;   
+            candidateRepository.findReferralsByEmail = mockFunction5;
             const createReferralDto = plainToInstance(CreateReferralDto,{
                 name: "name",
                 email: "email",
@@ -154,7 +153,7 @@ describe("Opening Service Test", () => {
         test("Failure case: Referral within six months", () => {
             const mockFunction1 = jest.fn();
             mockFunction1.mockResolvedValueOnce({id: 1});
-            referralRepository.saveReferral = mockFunction1;
+            candidateRepository.saveCandidate = mockFunction1;
 
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce(new Role());
@@ -179,8 +178,8 @@ describe("Opening Service Test", () => {
                 {role: {id: "1"}, createdAt: currentDate},
                 {role: {id: "1"}, createdAt: date12MonthsAgo}
             ]);
-            referralRepository.findReferralsByEmail = mockFunction5;   
-            
+            candidateRepository.findReferralsByEmail = mockFunction5;
+
             const createReferralDto = plainToInstance(CreateReferralDto,{
                 name: "name",
                 email: "email",
@@ -205,49 +204,49 @@ describe("Opening Service Test", () => {
     describe('deleteOpening', () => {
         test('Success case', async () => {
             const mockFunction1 = jest.fn();
-            mockFunction1.mockResolvedValueOnce({status: ReferralStatus.RECEIVED, referredBy: {email: "email"}});
+            mockFunction1.mockResolvedValueOnce({status: CandidateStatus.RECEIVED, referredBy: {email: "email"}});
             referralService.getReferralById = mockFunction1;
-    
+
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.BASIC});
             roleService.getRole = mockFunction2;
 
             const mockFunction3 = jest.fn();
             mockFunction3.mockImplementation((referral) => { });
-            referralRepository.deleteReferral = mockFunction3;
+            candidateRepository.deleteCandidate = mockFunction3;
 
             expect(referralService.deleteReferral("1", "1", "email")).resolves.not.toThrowError();
         });
 
         test('Failure case: Unauthorized action', async () => {
             const mockFunction1 = jest.fn();
-            mockFunction1.mockResolvedValueOnce({status: ReferralStatus.RECEIVED, referredBy: {email: "wrongmail"}});
+            mockFunction1.mockResolvedValueOnce({status: CandidateStatus.RECEIVED, referredBy: {email: "wrongmail"}});
             referralService.getReferralById = mockFunction1;
-    
+
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.BASIC});
             roleService.getRole = mockFunction2;
 
             const mockFunction3 = jest.fn();
             mockFunction3.mockImplementation((referral) => { });
-            referralRepository.deleteReferral = mockFunction3;
-            
+            candidateRepository.deleteCandidate = mockFunction3;
+
             expect(referralService.deleteReferral("1", "1", "email")).rejects.toThrowError(HttpException);
         });
 
         test('Failure case: Candidate moved to further stages', async () => {
             const mockFunction1 = jest.fn();
-            mockFunction1.mockResolvedValueOnce({status: ReferralStatus.ROUND1, referredBy: {email: "email"}});
+            mockFunction1.mockResolvedValueOnce({status: CandidateStatus.ROUND1, referredBy: {email: "email"}});
             referralService.getReferralById = mockFunction1;
-    
+
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.BASIC});
             roleService.getRole = mockFunction2;
 
             const mockFunction3 = jest.fn();
             mockFunction3.mockImplementation((referral) => { });
-            referralRepository.deleteReferral = mockFunction3;
-            
+            candidateRepository.deleteCandidate = mockFunction3;
+
             expect(referralService.deleteReferral("1", "1", "email")).rejects.toThrowError(HttpException);
         });
     });
@@ -266,7 +265,7 @@ describe("Opening Service Test", () => {
                     },
                 });
             referralService.getReferralById = mockFunction1;
-    
+
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
             roleService.getRole = mockFunction2;
@@ -281,8 +280,8 @@ describe("Opening Service Test", () => {
 
             const mockFunction5 = jest.fn();
             mockFunction5.mockResolvedValueOnce({id: "1"})
-            referralRepository.saveReferral = mockFunction5;
-            
+            candidateRepository.saveCandidate = mockFunction5;
+
             const updateReferralDto = plainToInstance(UpdateReferralDto,{
                 name: "name",
                 email: "email",
@@ -317,7 +316,7 @@ describe("Opening Service Test", () => {
                     },
                 });
             referralService.getReferralById = mockFunction1;
-    
+
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
             roleService.getRole = mockFunction2;
@@ -332,12 +331,12 @@ describe("Opening Service Test", () => {
 
             const mockFunction5 = jest.fn();
             mockFunction5.mockResolvedValueOnce({id: "1"})
-            referralRepository.saveReferral = mockFunction5;
-            
+            candidateRepository.saveCandidate = mockFunction5;
+
             const mockFunction6 = jest.fn();
             mockFunction6.mockResolvedValueOnce({})
             openingService.updateOpening = mockFunction6;
-            
+
             const updateReferralDto = plainToInstance(UpdateReferralDto,{
                 name: "name",
                 email: "email",
@@ -373,7 +372,7 @@ describe("Opening Service Test", () => {
                     },
                 });
             referralService.getReferralById = mockFunction1;
-    
+
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
             roleService.getRole = mockFunction2;
@@ -388,12 +387,12 @@ describe("Opening Service Test", () => {
 
             const mockFunction5 = jest.fn();
             mockFunction5.mockResolvedValueOnce({id: "1"})
-            referralRepository.saveReferral = mockFunction5;
-            
+            candidateRepository.saveCandidate = mockFunction5;
+
             const mockFunction6 = jest.fn();
             mockFunction6.mockResolvedValueOnce({})
             openingService.updateOpening = mockFunction6;
-            
+
             const updateReferralDto = plainToInstance(UpdateReferralDto,{
                 name: "name",
                 email: "email",
@@ -419,7 +418,7 @@ describe("Opening Service Test", () => {
             const mockFunction1 = jest.fn();
             mockFunction1.mockResolvedValueOnce({ referredBy: {email: "wrongmail"} });
             referralService.getReferralById = mockFunction1;
-    
+
             const mockFunction2 = jest.fn();
             mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.BASIC});
             roleService.getRole = mockFunction2;
@@ -434,8 +433,8 @@ describe("Opening Service Test", () => {
 
             const mockFunction5 = jest.fn();
             mockFunction5.mockResolvedValueOnce({id: "1"})
-            referralRepository.saveReferral = mockFunction5;
-            
+            candidateRepository.saveCandidate = mockFunction5;
+
             const updateReferralDto = plainToInstance(UpdateReferralDto,{
                 name: "name",
                 email: "email",

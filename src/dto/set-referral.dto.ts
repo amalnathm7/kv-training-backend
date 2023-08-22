@@ -10,7 +10,7 @@ import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
 import { ValidateDto } from "./validate.dto";
-import { ReferralStatus } from "../utils/status.enum";
+import { CandidateStatus } from "../utils/status.enum";
 
 class SetReferralDto implements ValidateDto {
   @IsNotEmpty()
@@ -30,8 +30,8 @@ class SetReferralDto implements ValidateDto {
   phone: string;
 
   @IsNotEmpty()
-  @IsEnum(ReferralStatus)
-  status: ReferralStatus;
+  @IsEnum(CandidateStatus)
+  status: CandidateStatus;
 
   @IsNotEmpty()
   @IsString()
