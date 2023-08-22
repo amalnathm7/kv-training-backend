@@ -111,7 +111,7 @@ class EmployeeService {
     async loginEmployee(loginEmployeeDto: LoginEmployeeDto) {
         const employee = await this.employeeRepository.findEmployeeByEmail(loginEmployeeDto.email);
         if (!employee) {
-            throw new HttpException(401, "Incorrect email", "UNAUTHORIZED");
+            throw new HttpException(401, "Incorrect email or password", "UNAUTHORIZED");
         }
 
         console.log(loginEmployeeDto.password);
