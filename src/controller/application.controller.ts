@@ -6,6 +6,7 @@ import CreateApplicationDto from "../dto/create-application.dto";
 import ApplicationService from "../service/application.service";
 import authenticate from "../middleware/authenticate.middleware";
 import { superAuthorize } from "../middleware/authorize.middleware";
+import UpdateApplicationDto from "../dto/update-application.dto";
 
 class ApplicationController {
     public router: express.Router;
@@ -15,6 +16,9 @@ class ApplicationController {
         this.router.post("/", validateMiddleware(CreateApplicationDto), this.createApplication);
         this.router.get("/", authenticate, superAuthorize, this.getAllApplications);
         this.router.get("/:id", this.getApplicationById);
+        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateApplicationDto), this.setApplication);
+        this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateApplicationDto), this.updateApplication);
+        this.router.delete("/:id", authenticate, superAuthorize, this.deleteApplication);
     }
 
     getAllApplications = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
@@ -46,6 +50,36 @@ class ApplicationController {
         try {
             const newApplication = await this.applicationService.createApplication(res.dto as CreateApplicationDto);
             JsonResponseUtil.sendJsonResponse201(res, newApplication);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    setApplication = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+        try {
+            const applicationId = req.params.id;
+            await this.applicationService.updateApplication(applicationId, res.dto as UpdateApplicationDto);
+            JsonResponseUtil.sendJsonResponse204(res);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    updateApplication = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+        try {
+            const applicationId = req.params.id;
+            await this.applicationService.updateApplication(applicationId, res.dto as UpdateApplicationDto);
+            JsonResponseUtil.sendJsonResponse204(res);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    deleteApplication = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+        try {
+            const applicationId = req.params.id;
+            await this.applicationService.deleteApplication(applicationId);
+            JsonResponseUtil.sendJsonResponse204(res);
         } catch (error) {
             next(error);
         }

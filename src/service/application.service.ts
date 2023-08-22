@@ -8,6 +8,8 @@ import { compareDateMonts } from "../utils/date.util";
 import CreateApplicationDto from "../dto/create-application.dto";
 import CandidateRepository from "../repository/candidate.repository";
 import { FindOptionsWhere, ILike } from "typeorm";
+import UpdateApplicationDto from "../dto/update-application.dto";
+import UpdateOpeningDto from "../dto/update-opening.dto";
 
 class ApplicationService {
     constructor(
@@ -75,6 +77,55 @@ class ApplicationService {
         newApplication.address = newAddress;
 
         return this.candidateRepository.saveCandidate(newApplication);
+    }
+
+    async deleteApplication(id: string): Promise<void> {
+        const application = await this.getApplicationById(id);
+
+        this.candidateRepository.deleteCandidate(application);
+    }
+
+    async updateApplication(id: string, updateReferralDto: UpdateApplicationDto): Promise<void> {
+        const application = await this.getApplicationById(id);
+
+        application.name = updateReferralDto.name;
+        application.email = updateReferralDto.email;
+        application.experience = updateReferralDto.experience;
+        application.phone = updateReferralDto.phone;
+
+        const openingId = updateReferralDto.openingId ? updateReferralDto.openingId : application.opening.id;
+        const opening = await this.openingService.getOpeningById(openingId);
+        if (updateReferralDto.openingId) {
+            application.opening = opening;
+        }
+
+        if (application.status !== CandidateStatus.HIRED && updateReferralDto.status === CandidateStatus.HIRED) {
+            if (opening.count <= 0) {
+                throw new HttpException(403, "No more openings available for this position", "Forbidden");
+            }
+            const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
+
+            openingUpdateDto.count--;
+
+            await this.openingService.updateOpening(opening.id, openingUpdateDto);
+        }
+        application.status = updateReferralDto.status;
+
+        if (updateReferralDto.roleId) {
+            const role = await this.roleService.getRole(updateReferralDto.roleId);
+            application.role = role;
+        }
+
+        if (updateReferralDto.address) {
+            application.address.line1 = updateReferralDto.address.line1;
+            application.address.line2 = updateReferralDto.address.line2;
+            application.address.city = updateReferralDto.address.city;
+            application.address.state = updateReferralDto.address.state;
+            application.address.country = updateReferralDto.address.country;
+            application.address.pincode = updateReferralDto.address.pincode;
+        }
+
+        this.candidateRepository.saveCandidate(application);
     }
 }
 

@@ -9,6 +9,9 @@ import Role from '../../entity/role.entity';
 import Opening from '../../entity/opening.entity';
 import {openingService} from '../../route/opening.route';
 import { roleService } from "../../route/role.route";
+import { CandidateStatus } from '../../utils/status.enum';
+import { PermissionLevel } from '../../utils/permission.level.enum';
+import UpdateApplicationDto from '../../dto/update-application.dto';
 
 describe("Application Service Test", () => {
     let applicationService: ApplicationService;
@@ -152,5 +155,164 @@ describe("Application Service Test", () => {
             expect(async() => await applicationService.createApplication(createReferralDto)).rejects.toThrowError(HttpException);
         });
     });
-});
 
+    describe('deleteApplication', () => {
+        test('Success case', async () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.RECEIVED });
+            applicationService.getApplicationById = mockFunction1;
+
+            const mockFunction3 = jest.fn();
+            mockFunction3.mockImplementation((application) => { });
+            candidateRepository.deleteCandidate = mockFunction3;
+
+            expect(applicationService.deleteApplication("1")).resolves.not.toThrowError();
+        });
+    });
+
+    describe("Update Application", () => {
+        test("Success case", async() => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({
+                    address: {
+                        addressLine1: "line 1",
+                        addressLine2: "line 2",
+                        city: "city",
+                        state: "state",
+                        pincode: "pincode"
+                    },
+                });
+            applicationService.getApplicationById = mockFunction1;
+    
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
+            roleService.getRole = mockFunction2;
+    
+            const mockFunction4 = jest.fn();
+            mockFunction4.mockResolvedValueOnce(new Opening())
+            openingService.getOpeningById = mockFunction4;
+    
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce({id: "1"})
+            candidateRepository.saveCandidate = mockFunction5;
+    
+            const updateApplicationDto = plainToInstance(UpdateApplicationDto, {
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "status",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).not.toThrowError();
+        });
+    
+        test("Success case with HIRED status", async() => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({
+                    address: {
+                        addressLine1: "line 1",
+                        addressLine2: "line 2",
+                        city: "city",
+                        state: "state",
+                        pincode: "pincode"
+                    },
+                });
+            applicationService.getApplicationById = mockFunction1;
+    
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
+            roleService.getRole = mockFunction2;
+   
+            const mockFunction4 = jest.fn();
+            mockFunction4.mockResolvedValueOnce({id: "1", count: 3, department: { id: "1" }, role: { id: "1" }})
+            openingService.getOpeningById = mockFunction4;
+    
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce({id: "1"})
+            candidateRepository.saveCandidate = mockFunction5;
+    
+            const mockFunction6 = jest.fn();
+            mockFunction6.mockResolvedValueOnce({})
+            openingService.updateOpening = mockFunction6;
+    
+            const updateApplicationDto = plainToInstance(UpdateApplicationDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "Hired",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).not.toThrowError();
+        });
+    
+        test("Failure case with HIRED status and opening.count as 0", async() => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({
+                    status: 'Recieved',
+                    address: {
+                        addressLine1: "line 1",
+                        addressLine2: "line 2",
+                        city: "city",
+                        state: "state",
+                        pincode: "pincode"
+                    },
+                });
+            applicationService.getApplicationById = mockFunction1;
+    
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
+            roleService.getRole = mockFunction2;
+    
+            const mockFunction4 = jest.fn();
+            mockFunction4.mockResolvedValueOnce({id: "1", count: 0, department: { id: "1" }, role: { id: "1" }})
+            openingService.getOpeningById = mockFunction4;
+    
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce({id: "1"})
+            candidateRepository.saveCandidate = mockFunction5;
+    
+            const mockFunction6 = jest.fn();
+            mockFunction6.mockResolvedValueOnce({})
+            openingService.updateOpening = mockFunction6;
+    
+            const updateApplicationDto = plainToInstance(UpdateApplicationDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "Hired",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).rejects.toThrowError(HttpException);
+        });
+    });
+});
