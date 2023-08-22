@@ -11,6 +11,7 @@ import { ReferralStatus } from "../utils/status.enum";
 import { PermissionLevel } from "../utils/permission.level.enum";
 import { ILike } from "typeorm";
 import UpdateOpeningDto from "../dto/update-opening.dto";
+import { compareDateMonts } from "../utils/date.util";
 
 class ReferralService {
     constructor(
@@ -62,17 +63,14 @@ class ReferralService {
         const { name, email, experience, address, roleId, phone, openingId, referredById, resume } = createReferralDto;
 
         const referrals = await this.referralRepository.findReferralsByEmail(email)
-        if (referrals) {
-            const referralWithSameRole = referrals.find((referral) => referral.role.id == roleId)
-            if (referralWithSameRole) {
-                let currentDate = new Date();
-                const currentDateMonth = currentDate.getMonth();
-                const oldDateMonth = referralWithSameRole.createdAt.getMonth();
-                if (currentDateMonth - oldDateMonth < 6) {
-                    throw new HttpException(409, "Cannot create a referral for the same role for the same person within 6 months", "NOT CREATED")
-                }
+        const referralsWithSameRole = referrals.filter((referral) => referral.role.id == roleId);
+        let currentDate = new Date();
+        referralsWithSameRole.forEach((referral) => {
+            const isLessThan6Months = !compareDateMonts(currentDate, referral.createdAt, 6);
+            if (isLessThan6Months) {
+                throw new HttpException(409, "Cannot create a referral for the same role for the same person within 6 months", "NOT CREATED")
             }
-        }
+        });
 
         const newReferral = new Referral();
         newReferral.name = name;
