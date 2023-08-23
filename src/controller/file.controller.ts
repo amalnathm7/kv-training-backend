@@ -58,7 +58,7 @@ class FileController {
       next(error);
     }
   };
-  
+
   checkResumeExists = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const filePath = (req.query.filePath || '') as string;
