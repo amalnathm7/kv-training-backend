@@ -7,6 +7,7 @@ import ApplicationService from "../service/application.service";
 import authenticate from "../middleware/authenticate.middleware";
 import { superAuthorize } from "../middleware/authorize.middleware";
 import UpdateApplicationDto from "../dto/update-application.dto";
+import SetApplication from "../dto/set-application.dto";
 
 class ApplicationController {
     public router: express.Router;
@@ -16,7 +17,7 @@ class ApplicationController {
         this.router.post("/", validateMiddleware(CreateApplicationDto), this.createApplication);
         this.router.get("/", authenticate, superAuthorize, this.getAllApplications);
         this.router.get("/:id", this.getApplicationById);
-        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateApplicationDto), this.setApplication);
+        this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(SetApplication), this.setApplication);
         this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateApplicationDto), this.updateApplication);
         this.router.delete("/:id", authenticate, superAuthorize, this.deleteApplication);
     }
