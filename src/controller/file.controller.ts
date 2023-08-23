@@ -40,15 +40,12 @@ class FileController {
     next: NextFunction
   ) => {
     try {
-      const filePath =
-        "/home/devi/Desktop/recruitment_portal/kv-training-backend/uploads/" +
-        req.params.filePath;
-      debugger;
-      console.log(filePath);
-      console.log("blahblahbah");
+      const filePath = `./uploads/` + req.params.filePath;
+
       if (!filePath) {
         throw new HttpException(400, "Incorrect filepath", "BAD REQUEST");
       }
+      
       if (fs.existsSync(filePath)) {
         res.sendFile(path.resolve(filePath));
       } else {
@@ -62,7 +59,7 @@ class FileController {
   checkResumeExists = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const filePath = (req.query.filePath || '') as string;
-            const fileExists = fs.existsSync(filePath);
+            const fileExists = fs.existsSync('./uploads/' + filePath);
             JsonResponseUtil.sendJsonResponse200(res, { fileExists });
         } catch (error) {
             next(error);
