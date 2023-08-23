@@ -47,6 +47,9 @@ class Employee extends AbstractEntity {
 
     @OneToMany(() => Candidate, (referral) => referral.referredBy)
     referrals: Candidate[]
+
+    @Column({ length: 6, default: () => "nanoid(6)", unique: true })
+    employeeCode: string;
 }
 
 export default Employee;
