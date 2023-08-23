@@ -40,7 +40,7 @@ class Candidate extends AbstractEntity {
     opening: Opening;
 
     @Column({ length: 6, default: () => "nanoid(6)", unique: true })
-    referralId: string;
+    candidateCode: string;
 }
 
 export default Candidate;
