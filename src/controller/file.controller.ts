@@ -14,8 +14,8 @@ class FileController {
   constructor() {
     this.router = express.Router();
     this.router.post("/upload", authenticate, this.uploadResume);
-    this.router.get("/:filePath", this.getResume);
     this.router.get("/check", this.checkResumeExists);
+    this.router.get("/:filePath", this.getResume);
   }
 
   uploadResume = async (
@@ -45,7 +45,7 @@ class FileController {
       if (!filePath) {
         throw new HttpException(400, "Incorrect filepath", "BAD REQUEST");
       }
-      
+
       if (fs.existsSync(filePath)) {
         res.sendFile(path.resolve(filePath));
       } else {

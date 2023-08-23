@@ -14,7 +14,7 @@ let storage = multer.diskStorage({
         callback(null, folderPath);
     },
     filename: (req, file, callback) => {
-        const filePath = Date.now() + '_' + file.originalname;
+        const filePath = Date.now() + '_' + file.originalname.replace(' ', '_');
         callback(null, filePath);
         req.filePath = filePath;
     },
