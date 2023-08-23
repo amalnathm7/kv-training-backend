@@ -6,9 +6,9 @@ import { ResponseWithLog } from "../utils/response.with.log";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import uploadFileMiddleware from "../middleware/upload.middleware";
 import HttpException from "../exception/http.exception";
-import { authorize } from "../middleware/authorize.middleware";
 import fs from "fs";
 import path from "path";
+
 class FileController {
   public router: express.Router;
   constructor() {
@@ -17,6 +17,7 @@ class FileController {
     this.router.get("/:filePath", this.getResume);
     this.router.get("/check", this.checkResumeExists);
   }
+
   uploadResume = async (
     req: RequestWithUser,
     res: ResponseWithLog,
@@ -32,6 +33,7 @@ class FileController {
       next(error);
     }
   };
+
   getResume = async (
     req: RequestWithUser,
     res: ResponseWithLog,
@@ -56,7 +58,8 @@ class FileController {
       next(error);
     }
   };
- checkResumeExists = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+  
+  checkResumeExists = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const filePath = (req.query.filePath || '') as string;
             const fileExists = fs.existsSync(filePath);
