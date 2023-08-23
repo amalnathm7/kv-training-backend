@@ -9,7 +9,7 @@ import ApplicationService from "../service/application.service";
 const candidateRepository = new CandidateRepository(dataSource.getRepository(Candidate));
 const applicationService = new ApplicationService(candidateRepository, openingService, roleService);
 const applicationController = new ApplicationController(applicationService);
-const applicatoinRoute = applicationController.router;
+const applicationRoute = applicationController.router;
 
 export { applicationService };
-export default applicatoinRoute;
+export default applicationRoute;

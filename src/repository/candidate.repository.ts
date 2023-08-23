@@ -2,10 +2,10 @@ import { FindOptionsWhere, IsNull, Not, Repository } from "typeorm";
 import Candidate from "../entity/candidate.entity";
 
 class CandidateRepository {
-    constructor(private referralRepository: Repository<Candidate>) { }
+    constructor(private candidateRepository: Repository<Candidate>) { }
 
     findAllReferrals(offset: number, pageLength: number, where: FindOptionsWhere<Candidate>): Promise<[Candidate[], number]> {
-        return this.referralRepository.findAndCount({
+        return this.candidateRepository.findAndCount({
             where: {
                 ...where,
                 referredBy: Not(IsNull())
@@ -25,7 +25,7 @@ class CandidateRepository {
     }
 
     findReferralById(id: string): Promise<Candidate | null> {
-        return this.referralRepository.findOne({
+        return this.candidateRepository.findOne({
             where: {
                 id,
                 referredBy: Not(IsNull())
@@ -40,7 +40,7 @@ class CandidateRepository {
     }
 
     findReferralsByEmail(email: string): Promise<Candidate[]> {
-        return this.referralRepository.find({
+        return this.candidateRepository.find({
             where: {
                 email,
                 referredBy: Not(IsNull())
@@ -55,7 +55,7 @@ class CandidateRepository {
     }
 
     findReferralsReferredByEmail(email: string): Promise<Candidate[]> {
-        return this.referralRepository.find({
+        return this.candidateRepository.find({
             where: {
                 referredBy: {
                     email
@@ -71,15 +71,35 @@ class CandidateRepository {
     }
 
     saveCandidate(candidate: Candidate): Promise<Candidate> {
-        return this.referralRepository.save(candidate);
+        return this.candidateRepository.save(candidate);
     }
 
     deleteCandidate(candidate: Candidate): Promise<Candidate> {
-        return this.referralRepository.softRemove(candidate);
+        return this.candidateRepository.softRemove(candidate);
+    }
+
+    findAllApplications(offset: number, pageLength: number, where: FindOptionsWhere<Candidate>): Promise<[Candidate[], number]> {
+        return this.candidateRepository.findAndCount({
+            where: {
+                ...where,
+                referredBy: IsNull()
+            },
+            order: {
+                createdAt: "asc",
+            },
+            skip: offset * pageLength,
+            take: pageLength,
+            relations: {
+                address: true,
+                opening: true,
+                referredBy: true,
+                role: true
+            }
+        });
     }
 
     findApplicationById(id: string): Promise<Candidate | null> {
-        return this.referralRepository.findOne({
+        return this.candidateRepository.findOne({
             where: {
                 id,
                 referredBy: IsNull()
@@ -94,7 +114,7 @@ class CandidateRepository {
     }
 
     findApplicationsByEmail(email: string): Promise<Candidate[]> {
-        return this.referralRepository.find({
+        return this.candidateRepository.find({
             where: {
                 email,
                 referredBy: IsNull()
