@@ -127,6 +127,7 @@ class ReferralService {
         referral.email = updateReferralDto.email;
         referral.experience = updateReferralDto.experience;
         referral.phone = updateReferralDto.phone;
+        referral.resume = updateReferralDto.resume;
 
         const openingId = updateReferralDto.openingId ? updateReferralDto.openingId : referral.opening.id;
         const opening = await this.openingService.getOpeningById(openingId);
