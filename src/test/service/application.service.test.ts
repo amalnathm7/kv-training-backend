@@ -12,6 +12,8 @@ import { roleService } from "../../route/role.route";
 import { CandidateStatus } from '../../utils/status.enum';
 import { PermissionLevel } from '../../utils/permission.level.enum';
 import UpdateApplicationDto from '../../dto/update-application.dto';
+import { employeeService } from '../../route/employee.route';
+import Employee from '../../entity/employee.entity';
 
 describe("Application Service Test", () => {
     let applicationService: ApplicationService;
@@ -26,6 +28,7 @@ describe("Application Service Test", () => {
       );
       applicationService = new ApplicationService(
         candidateRepository,
+        employeeService,
         openingService,
         roleService
       );
@@ -245,6 +248,10 @@ describe("Application Service Test", () => {
             mockFunction6.mockResolvedValueOnce({})
             openingService.updateOpening = mockFunction6;
     
+            const mockFunction7 = jest.fn();
+            mockFunction7.mockResolvedValueOnce(new Employee())
+            employeeService.createEmployeeFromCandidate = mockFunction7;
+
             const updateApplicationDto = plainToInstance(UpdateApplicationDto,{
                 name: "name",
                 email: "email",
@@ -262,7 +269,7 @@ describe("Application Service Test", () => {
                 roleId: "1",
                 openingId: "1",
             });
-            expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).not.toThrowError();
+            expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).not.toThrow();
         });
     
         test("Failure case with HIRED status and opening.count as 0", async() => {

@@ -337,6 +337,11 @@ describe("Referral Service Test", () => {
             mockFunction6.mockResolvedValueOnce({})
             openingService.updateOpening = mockFunction6;
 
+            const mockFunction7 = jest.fn();
+            mockFunction7.mockResolvedValueOnce(new Employee())
+            employeeService.createEmployeeFromCandidate = mockFunction7;
+
+
             const updateReferralDto = plainToInstance(UpdateReferralDto,{
                 name: "name",
                 email: "email",
