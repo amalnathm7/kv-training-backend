@@ -35,7 +35,7 @@ class ApplicationService {
     async getApplicationById(id: string): Promise<Candidate | null> {
         const application = await this.candidateRepository.findApplicationById(id);
         if (!application) {
-            throw new HttpException(404, "Referral not found", "NOT FOUND");
+            throw new HttpException(404, "Application not found", "NOT FOUND");
         }
         return application;
     }
