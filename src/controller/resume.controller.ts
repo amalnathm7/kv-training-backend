@@ -21,8 +21,6 @@ class ResumeController {
             }
 
             if (fs.existsSync(filePath)) {
-                //const fileURL = `${req.protocol}://${req.get('host')}/uploads/${filename}`;
-                //res.json({ url: fileURL });
                 res.sendFile(path.resolve(filePath));
             } else {
                 throw new HttpException(400, "File not found", "BAD REQUEST");
