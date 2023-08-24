@@ -16,3 +16,10 @@ export enum CandidateStatus {
     REJECTED = "Rejected",
     HIRED = "Hired"
 }
+
+export enum BonusStatus {
+    INACTIVE = "Inactive",
+    PROCESSING = "Processing",
+    ELIGIBLE = "Eligible",
+    APPROVED = "Approved",
+}

@@ -7,13 +7,14 @@ import CreateReferralDto from "../dto/create-referral.dto";
 import UpdateReferralDto from "../dto/update-referral.dto";
 import EmployeeService from "./employee.service";
 import OpeningService from "../service/opening.service";
-import { CandidateStatus, EmployeeStatus } from "../utils/status.enum";
+import { BonusStatus, CandidateStatus } from "../utils/status.enum";
 import { PermissionLevel } from "../utils/permission.level.enum";
 import { FindOptionsWhere, ILike } from "typeorm";
 import UpdateOpeningDto from "../dto/update-opening.dto";
 import { compareDateMonts } from "../utils/date.util";
-import CreateEmployeeDto from "../dto/create-employee.dto";
 import Employee from "../entity/employee.entity";
+import UpdateReferralBonusDto from "../dto/update-referral-bonus.dto";
+import winstonLogger from "../utils/winston.logger";
 
 class ReferralService {
     constructor(
@@ -174,12 +175,62 @@ class ReferralService {
                 await this.openingService.updateOpening(opening.id, openingUpdateDto);
 
                 employee = await this.employeeService.createEmployeeFromCandidate(referral, opening.department, opening.role);
+                referral.bonusStatus = BonusStatus.PROCESSING;
             }
             referral.status = updateReferralDto.status;
         }
 
         this.candidateRepository.saveCandidate(referral);
-        return employee; 
+        return employee;
+    }
+
+    async updateReferralBonusStatus(id: string, updateBonusDto: UpdateReferralBonusDto): Promise<void> {
+        const bonusStatus = updateBonusDto.bonusStatus
+        const referral = await this.getReferralById(id);
+        switch (referral.bonusStatus) {
+            case BonusStatus.INACTIVE: {
+                throw new HttpException(403, "Referral already inactive", "Forbidden");
+            }
+            case BonusStatus.APPROVED: {
+                throw new HttpException(403, "Referral bonus already approved", "Forbidden");
+            }
+            case BonusStatus.PROCESSING: {
+                if (bonusStatus !== BonusStatus.ELIGIBLE && bonusStatus !== BonusStatus.INACTIVE) {
+                    throw new HttpException(403, "Invalid new Bonus Status", "Forbidden");
+                }
+                referral.bonusStatus = bonusStatus;
+                break;
+            }
+            case BonusStatus.ELIGIBLE: {
+                if (bonusStatus !== BonusStatus.APPROVED && bonusStatus !== BonusStatus.INACTIVE) {
+                    throw new HttpException(403, "Invalid new Bonus Status", "Forbidden");
+                }
+                referral.bonusStatus = bonusStatus;
+                break;
+            }
+        }
+        this.candidateRepository.saveCandidate(referral);
+    }
+
+    async checkBonusEligibility(): Promise<void> {
+        winstonLogger.log({
+            level: 'info',
+            timeStamp: new Date(),
+            message: 'Checking for Eligible Referrals for Bonus.',
+        });
+        const employees = await this.employeeService.getAllEmployeesEmployedFor3Months();
+        for (const employee of employees) {
+            const referrals = await this.getReferralsByEmail(employee.email);
+            const referral = referrals.find((referral) => referral.status === CandidateStatus.HIRED && referral.bonusStatus === BonusStatus.PROCESSING);
+            if (referral) {
+                await this.updateReferralBonusStatus(referral.id, { bonusStatus: BonusStatus.ELIGIBLE });
+                winstonLogger.log({
+                    level: 'info',
+                    timeStamp: new Date(),
+                    message: `Referral ${referral.id} Eligible for Bonus`,
+                });
+            }
+        }
     }
 }
 

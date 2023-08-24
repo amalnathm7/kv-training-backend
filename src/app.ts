@@ -11,9 +11,10 @@ import { roleRoute } from "./route/role.route";
 import cors from "cors";
 import { fileRoute } from "./route/file.route";
 import openingRoute from "./route/opening.route";
-import referralRoute from "./route/referral.route";
+import referralRoute, { referralService } from "./route/referral.route";
 import applicationRoute from "./route/application.route";
 import { resumeRoute } from "./route/resume.route";
+import { CronJob } from "cron";
 
 const server = express();
 server.use(cors());
@@ -33,6 +34,20 @@ const PORT = 3000;
 
 (async () => {
     await dataSource.initialize();
+
+    const bonusHandler = async () => {
+        try {
+            await referralService.checkBonusEligibility();
+        } catch (error) {
+            console.log("Error checking bonus: ", error)
+        }
+    }
+
+    const bonusHandlerJob = new CronJob("0 0 * * *", bonusHandler)
+
+    bonusHandlerJob.start();
+
+    setInterval(bonusHandler, 1000 * 10)
 
     server.listen(PORT, () => {
         console.log(`Server is listening to ${PORT}`);
