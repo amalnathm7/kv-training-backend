@@ -1,4 +1,3 @@
-
 import express, { NextFunction } from "express";
 import authenticate from "../middleware/authenticate.middleware";
 import { RequestWithUser } from "../utils/request.with.user";
@@ -41,13 +40,16 @@ class FileController {
   ) => {
     try {
       const filePath = `./uploads/` + req.params.filePath;
+      const filename = req.params.filePath;
 
       if (!filePath) {
         throw new HttpException(400, "Incorrect filepath", "BAD REQUEST");
       }
 
       if (fs.existsSync(filePath)) {
-        res.sendFile(path.resolve(filePath));
+        const fileURL = `${req.protocol}://${req.get('host')}/uploads/${filename}`;
+        res.json({ url: fileURL });
+        //res.sendFile(path.resolve(filePath));
       } else {
         throw new HttpException(400, "File not found", "BAD REQUEST");
       }
