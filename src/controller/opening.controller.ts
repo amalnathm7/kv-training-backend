@@ -15,7 +15,7 @@ class OpeningController {
         this.router = express.Router();
         this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateOpeningDto), this.createOpening);
         this.router.get("/", this.getAllOpenings);
-        this.router.get("/:id", authenticate, authorize, this.getOpeningById);
+        this.router.get("/:id", this.getOpeningById);
         this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateOpeningDto), this.setOpening);
         this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateOpeningDto), this.updateOpening);
         this.router.delete("/:id", authenticate,superAuthorize, this.deleteOpening);
