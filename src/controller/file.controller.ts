@@ -1,19 +1,16 @@
-
 import express, { NextFunction } from "express";
-import authenticate from "../middleware/authenticate.middleware";
 import { RequestWithUser } from "../utils/request.with.user";
 import { ResponseWithLog } from "../utils/response.with.log";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import uploadFileMiddleware from "../middleware/upload.middleware";
 import HttpException from "../exception/http.exception";
 import fs from "fs";
-import path from "path";
 
 class FileController {
   public router: express.Router;
   constructor() {
     this.router = express.Router();
-    this.router.post("/upload", authenticate, this.uploadResume);
+    this.router.post("/upload", this.uploadResume);
     this.router.get("/check", this.checkResumeExists);
     this.router.get("/:filePath", this.getResume);
   }
@@ -41,13 +38,15 @@ class FileController {
   ) => {
     try {
       const filePath = `./uploads/` + req.params.filePath;
+      const filename = req.params.filePath;
 
       if (!filePath) {
         throw new HttpException(400, "Incorrect filepath", "BAD REQUEST");
       }
 
       if (fs.existsSync(filePath)) {
-        res.sendFile(path.resolve(filePath));
+        const fileURL = `${req.protocol}://${req.get('host')}/uploads/${filename}`;
+        res.json({ url: fileURL });
       } else {
         throw new HttpException(400, "File not found", "BAD REQUEST");
       }
