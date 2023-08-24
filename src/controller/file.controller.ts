@@ -13,7 +13,7 @@ class FileController {
   public router: express.Router;
   constructor() {
     this.router = express.Router();
-    this.router.post("/upload", authenticate, this.uploadResume);
+    this.router.post("/upload", this.uploadResume);
     this.router.get("/check", this.checkResumeExists);
     this.router.get("/:filePath", this.getResume);
   }

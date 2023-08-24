@@ -1,6 +1,6 @@
 import express, { NextFunction } from "express";
 import authenticate from "../middleware/authenticate.middleware";
-import { authorize, superAuthorize } from "../middleware/authorize.middleware";
+import { superAuthorize } from "../middleware/authorize.middleware";
 import validateMiddleware from "../middleware/validate.middleware";
 import UpdateOpeningDto from "../dto/update-opening.dto";
 import { ResponseWithLog } from "../utils/response.with.log";
