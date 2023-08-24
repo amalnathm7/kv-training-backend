@@ -10,6 +10,10 @@ import jwt from "jsonwebtoken";
 import { jwtPayload } from "../utils/jwt.payload.type";
 import DepartmentService from "./department.service";
 import RoleService from "./role.service";
+import Candidate from "../entity/candidate.entity";
+import { EmployeeStatus } from "../utils/status.enum";
+import Department from "../entity/department.entity";
+import Role from "../entity/role.entity";
 
 class EmployeeService {
     constructor(private employeeRepository: EmployeeRepository, private departmentService: DepartmentService, private roleService: RoleService) { }
@@ -63,6 +67,24 @@ class EmployeeService {
         newAddress.country = address.country;
         newAddress.pincode = address.pincode;
         newEmployee.address = newAddress;
+
+        return this.employeeRepository.saveEmployee(newEmployee);
+    }
+
+    async createEmployeeFromCandidate(candidate: Candidate, department: Department, role: Role): Promise<Employee> {
+        const { name, email, phone, experience, address } = candidate;
+        const newEmployee = new Employee();
+        newEmployee.name = name;
+        newEmployee.email = email;
+        newEmployee.phone = phone;
+        newEmployee.password = await bcrypt.hash(email, 10);
+        newEmployee.joiningDate = (new Date()).toString();
+        newEmployee.experience = experience;
+        newEmployee.status = EmployeeStatus.ACTIVE
+        newEmployee.address = candidate.address;
+        newEmployee.role = role;
+        newEmployee.department = department;
+        newEmployee.referredBy = candidate.referredBy;
 
         return this.employeeRepository.saveEmployee(newEmployee);
     }
