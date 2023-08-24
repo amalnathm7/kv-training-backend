@@ -8,6 +8,7 @@ import authenticate from "../middleware/authenticate.middleware";
 import { superAuthorize } from "../middleware/authorize.middleware";
 import UpdateApplicationDto from "../dto/update-application.dto";
 import SetApplication from "../dto/set-application.dto";
+import { CandidateStatus } from "../utils/status.enum";
 
 class ApplicationController {
     public router: express.Router;
@@ -28,8 +29,9 @@ class ApplicationController {
             const pageLength = Number(req.query.length ?? 0);
             const role = (req.query.role ?? '') as string;
             const email = (req.query.email ?? '') as string;
+            const status = CandidateStatus[(req.query.status ?? '').toString().replace(' ', '_').toUpperCase()];
             const openingId = (req.query.openingId ?? '') as string;
-            const referrals = await this.applicationService.getAllApplications(offset, pageLength, email, role, openingId);
+            const referrals = await this.applicationService.getAllApplications(offset, pageLength, email, role, status, openingId);
             referrals.push(offset);
             JsonResponseUtil.sendJsonResponse200(res, referrals);
         } catch (error) {
