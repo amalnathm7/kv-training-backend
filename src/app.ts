@@ -13,6 +13,7 @@ import { fileRoute } from "./route/file.route";
 import openingRoute from "./route/opening.route";
 import referralRoute from "./route/referral.route";
 import applicationRoute from "./route/application.route";
+import { resumeRoute } from "./route/resume.route";
 
 const server = express();
 server.use(cors());
@@ -25,6 +26,7 @@ server.use('/files', fileRoute)
 server.use('/openings', openingRoute);
 server.use('/referrals', referralRoute);
 server.use('/applications', applicationRoute);
+server.use('/uploads',resumeRoute);
 server.use(errorMiddleware);
 
 const PORT = 3000;
