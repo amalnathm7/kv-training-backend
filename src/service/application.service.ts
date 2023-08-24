@@ -85,21 +85,22 @@ class ApplicationService {
         this.candidateRepository.deleteCandidate(application);
     }
 
-    async updateApplication(id: string, updateReferralDto: UpdateApplicationDto): Promise<void> {
+    async updateApplication(id: string, updateApplicationDto: UpdateApplicationDto): Promise<void> {
         const application = await this.getApplicationById(id);
 
-        application.name = updateReferralDto.name;
-        application.email = updateReferralDto.email;
-        application.experience = updateReferralDto.experience;
-        application.phone = updateReferralDto.phone;
+        application.name = updateApplicationDto.name;
+        application.email = updateApplicationDto.email;
+        application.experience = updateApplicationDto.experience;
+        application.phone = updateApplicationDto.phone;
+        application.resume = updateApplicationDto.resume;
 
-        const openingId = updateReferralDto.openingId ? updateReferralDto.openingId : application.opening.id;
+        const openingId = updateApplicationDto.openingId ? updateApplicationDto.openingId : application.opening.id;
         const opening = await this.openingService.getOpeningById(openingId);
-        if (updateReferralDto.openingId) {
+        if (updateApplicationDto.openingId) {
             application.opening = opening;
         }
 
-        if (application.status !== CandidateStatus.HIRED && updateReferralDto.status === CandidateStatus.HIRED) {
+        if (application.status !== CandidateStatus.HIRED && updateApplicationDto.status === CandidateStatus.HIRED) {
             if (opening.count <= 0) {
                 throw new HttpException(403, "No more openings available for this position", "Forbidden");
             }
@@ -109,20 +110,20 @@ class ApplicationService {
 
             await this.openingService.updateOpening(opening.id, openingUpdateDto);
         }
-        application.status = updateReferralDto.status;
+        application.status = updateApplicationDto.status;
 
-        if (updateReferralDto.roleId) {
-            const role = await this.roleService.getRole(updateReferralDto.roleId);
+        if (updateApplicationDto.roleId) {
+            const role = await this.roleService.getRole(updateApplicationDto.roleId);
             application.role = role;
         }
 
-        if (updateReferralDto.address) {
-            application.address.line1 = updateReferralDto.address.line1;
-            application.address.line2 = updateReferralDto.address.line2;
-            application.address.city = updateReferralDto.address.city;
-            application.address.state = updateReferralDto.address.state;
-            application.address.country = updateReferralDto.address.country;
-            application.address.pincode = updateReferralDto.address.pincode;
+        if (updateApplicationDto.address) {
+            application.address.line1 = updateApplicationDto.address.line1;
+            application.address.line2 = updateApplicationDto.address.line2;
+            application.address.city = updateApplicationDto.address.city;
+            application.address.state = updateApplicationDto.address.state;
+            application.address.country = updateApplicationDto.address.country;
+            application.address.pincode = updateApplicationDto.address.pincode;
         }
 
         this.candidateRepository.saveCandidate(application);
