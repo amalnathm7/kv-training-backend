@@ -3,17 +3,21 @@ import HttpException from "../exception/http.exception";
 import RoleService from "./role.service";
 import Candidate from "../entity/candidate.entity";
 import OpeningService from "../service/opening.service";
-import { CandidateStatus } from "../utils/status.enum";
+import { CandidateStatus, EmployeeStatus } from "../utils/status.enum";
 import { compareDateMonts } from "../utils/date.util";
 import CreateApplicationDto from "../dto/create-application.dto";
 import CandidateRepository from "../repository/candidate.repository";
 import { FindOptionsWhere, ILike } from "typeorm";
 import UpdateApplicationDto from "../dto/update-application.dto";
 import UpdateOpeningDto from "../dto/update-opening.dto";
+import CreateEmployeeDto from "../dto/create-employee.dto";
+import EmployeeService from "./employee.service";
+import Employee from "../entity/employee.entity";
 
 class ApplicationService {
     constructor(
         private candidateRepository: CandidateRepository,
+        private employeeService: EmployeeService,
         private openingService: OpeningService,
         private roleService: RoleService
     ) { }
@@ -81,12 +85,19 @@ class ApplicationService {
 
     async deleteApplication(id: string): Promise<void> {
         const application = await this.getApplicationById(id);
+        if (application.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Application already Hired", "Forbidden");
+        }
 
         this.candidateRepository.deleteCandidate(application);
     }
 
-    async updateApplication(id: string, updateApplicationDto: UpdateApplicationDto): Promise<void> {
+    async updateApplication(id: string, updateApplicationDto: UpdateApplicationDto): Promise<Employee | null> {
+        let employee: Employee = null;
         const application = await this.getApplicationById(id);
+        if (application.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Application already Hired", "Forbidden");
+        }
 
         application.name = updateApplicationDto.name;
         application.email = updateApplicationDto.email;
@@ -99,18 +110,6 @@ class ApplicationService {
         if (updateApplicationDto.openingId) {
             application.opening = opening;
         }
-
-        if (application.status !== CandidateStatus.HIRED && updateApplicationDto.status === CandidateStatus.HIRED) {
-            if (opening.count <= 0) {
-                throw new HttpException(403, "No more openings available for this position", "Forbidden");
-            }
-            const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
-
-            openingUpdateDto.count--;
-
-            await this.openingService.updateOpening(opening.id, openingUpdateDto);
-        }
-        application.status = updateApplicationDto.status;
 
         if (updateApplicationDto.roleId) {
             const role = await this.roleService.getRole(updateApplicationDto.roleId);
@@ -126,7 +125,20 @@ class ApplicationService {
             application.address.pincode = updateApplicationDto.address.pincode;
         }
 
+        if (updateApplicationDto.status === CandidateStatus.HIRED) {
+            if (opening.count <= 0) {
+                throw new HttpException(403, "No more openings available for this position", "Forbidden");
+            }
+            const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
+            openingUpdateDto.count--;
+            await this.openingService.updateOpening(opening.id, openingUpdateDto);
+
+            employee = await this.employeeService.createEmployeeFromCandidate(application, opening.department, opening.role);
+        }
+        application.status = updateApplicationDto.status;
+
         this.candidateRepository.saveCandidate(application);
+        return employee;
     }
 }
 

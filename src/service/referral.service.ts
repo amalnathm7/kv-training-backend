@@ -7,11 +7,13 @@ import CreateReferralDto from "../dto/create-referral.dto";
 import UpdateReferralDto from "../dto/update-referral.dto";
 import EmployeeService from "./employee.service";
 import OpeningService from "../service/opening.service";
-import { CandidateStatus } from "../utils/status.enum";
+import { CandidateStatus, EmployeeStatus } from "../utils/status.enum";
 import { PermissionLevel } from "../utils/permission.level.enum";
 import { FindOptionsWhere, ILike } from "typeorm";
 import UpdateOpeningDto from "../dto/update-opening.dto";
 import { compareDateMonts } from "../utils/date.util";
+import CreateEmployeeDto from "../dto/create-employee.dto";
+import Employee from "../entity/employee.entity";
 
 class ReferralService {
     constructor(
@@ -102,6 +104,9 @@ class ReferralService {
 
     async deleteReferral(id: string, roleId: string, email: string): Promise<void> {
         const referral = await this.getReferralById(id);
+        if (referral.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Referral already Hired", "Forbidden");
+        }
         const role = await this.roleService.getRole(roleId);
 
         if (referral.referredBy.email !== email && role.permissionLevel !== PermissionLevel.SUPER) {
@@ -115,9 +120,13 @@ class ReferralService {
         this.candidateRepository.deleteCandidate(referral);
     }
 
-    async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<void> {
+    async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<Employee | null> {
         const referral = await this.getReferralById(id);
+        if (referral.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Referral already Hired", "Forbidden");
+        }
         const role = await this.roleService.getRole(roleId);
+        let employee: Employee = null;
 
         if (referral.referredBy.email !== email && role.permissionLevel !== PermissionLevel.SUPER) {
             throw new HttpException(403, "You are not authorized to perform this action", "Forbidden");
@@ -133,20 +142,6 @@ class ReferralService {
         const opening = await this.openingService.getOpeningById(openingId);
         if (updateReferralDto.openingId) {
             referral.opening = opening;
-        }
-
-        if (role.permissionLevel === PermissionLevel.SUPER) {
-            if (referral.status !== CandidateStatus.HIRED && updateReferralDto.status === CandidateStatus.HIRED) {
-                if (opening.count <= 0) {
-                    throw new HttpException(403, "No more openings available for this position", "Forbidden");
-                }
-                const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
-
-                openingUpdateDto.count--;
-
-                await this.openingService.updateOpening(opening.id, openingUpdateDto);
-            }
-            referral.status = updateReferralDto.status;
         }
 
         if (updateReferralDto.roleId) {
@@ -168,7 +163,22 @@ class ReferralService {
             referral.address.pincode = updateReferralDto.address.pincode;
         }
 
+        if (role.permissionLevel === PermissionLevel.SUPER) {
+            if (updateReferralDto.status === CandidateStatus.HIRED) {
+                if (opening.count <= 0) {
+                    throw new HttpException(403, "No more openings available for this position", "Forbidden");
+                }
+                const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
+                openingUpdateDto.count--;
+                await this.openingService.updateOpening(opening.id, openingUpdateDto);
+
+                employee = await this.employeeService.createEmployeeFromCandidate(referral, opening.department, opening.role);
+            }
+            referral.status = updateReferralDto.status;
+        }
+
         this.candidateRepository.saveCandidate(referral);
+        return employee; 
     }
 }
 

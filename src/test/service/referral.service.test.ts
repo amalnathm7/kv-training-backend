@@ -201,7 +201,7 @@ describe("Referral Service Test", () => {
         });
     });
 
-    describe('deleteOpening', () => {
+    describe('deleteReferral', () => {
         test('Success case', async () => {
             const mockFunction1 = jest.fn();
             mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.RECEIVED, referredBy: { email: "email" } });
@@ -248,6 +248,14 @@ describe("Referral Service Test", () => {
             candidateRepository.deleteCandidate = mockFunction3;
 
             expect(referralService.deleteReferral("1", "1", "email")).rejects.toThrowError(HttpException);
+        });
+
+        test('Failure case when application already hired', async () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.HIRED });
+            referralService.getReferralById = mockFunction1;
+
+            expect(referralService.deleteReferral("1", "1", "email")).rejects.toThrow(HttpException);
         });
     });
 
@@ -390,6 +398,11 @@ describe("Referral Service Test", () => {
             mockFunction6.mockResolvedValueOnce({})
             openingService.updateOpening = mockFunction6;
 
+            const mockFunction7 = jest.fn();
+            mockFunction7.mockResolvedValueOnce(new Employee())
+            employeeService.createEmployeeFromCandidate = mockFunction7;
+
+
             const updateReferralDto = plainToInstance(UpdateReferralDto, {
                 name: "name",
                 email: "email",
@@ -507,6 +520,31 @@ describe("Referral Service Test", () => {
                 openingId: "1",
             });
             expect(async () => await referralService.updateReferral("1", "1", "email", updateReferralDto)).rejects.toThrowError(HttpException);
+        });
+
+        test('Failure case when referral already hired', async () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.HIRED });
+            referralService.getReferralById = mockFunction1;
+
+            const updatereferralDto = plainToInstance(UpdateReferralDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "Hired",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(referralService.updateReferral("1", "1", "email", updatereferralDto)).rejects.toThrow(HttpException);
         });
     });
 });

@@ -59,8 +59,9 @@ class ApplicationController {
     setApplication = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const applicationId = req.params.id;
-            await this.applicationService.updateApplication(applicationId, res.dto as UpdateApplicationDto);
-            JsonResponseUtil.sendJsonResponse204(res);
+            const employee = await this.applicationService.updateApplication(applicationId, res.dto as UpdateApplicationDto);
+            const response = employee ? { id: employee.id } : {};
+            JsonResponseUtil.sendJsonResponse200(res, response);
         } catch (error) {
             next(error);
         }
@@ -69,8 +70,9 @@ class ApplicationController {
     updateApplication = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const applicationId = req.params.id;
-            await this.applicationService.updateApplication(applicationId, res.dto as UpdateApplicationDto);
-            JsonResponseUtil.sendJsonResponse204(res);
+            const employee = await this.applicationService.updateApplication(applicationId, res.dto as UpdateApplicationDto);
+            const response = employee ? { id: employee.id } : {};
+            JsonResponseUtil.sendJsonResponse200(res, response);
         } catch (error) {
             next(error);
         }

@@ -14,6 +14,7 @@ import Department from "../../entity/department.entity";
 import * as dotenv from "dotenv";
 import { roleService } from "../../route/role.route";
 import { departmentService } from "../../route/department.route";
+import Candidate from "../../entity/candidate.entity";
 dotenv.config({ path: __dirname + '/../../../.env' });
 
 describe('Employee Service Test', () => {
@@ -109,6 +110,27 @@ describe('Employee Service Test', () => {
 
             });
             const newEmployee = await employeeService.createEmployee(createEmployeeDto);
+            expect(newEmployee).toStrictEqual({ id: 1 });
+        });
+    });
+
+    describe('createEmployeeFromCandidate', () => {
+        test('Success case', async () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ id: 1 });
+            employeeRepository.saveEmployee = mockFunction1;
+
+            const mockFunction2 = jest.fn();
+            when(mockFunction2).calledWith("1").mockResolvedValueOnce(new Role());
+            roleService.getRole = mockFunction2;
+
+            const mockFunction3 = jest.fn();
+            when(mockFunction3).calledWith("1").mockResolvedValueOnce(new Department());
+            departmentService.getDepartmentById = mockFunction3;
+
+            const candidate = new Candidate();
+            candidate.email = "email";
+            const newEmployee = await employeeService.createEmployeeFromCandidate(candidate, new Department(), new Role());
             expect(newEmployee).toStrictEqual({ id: 1 });
         });
     });
