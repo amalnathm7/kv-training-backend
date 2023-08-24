@@ -13,8 +13,8 @@ class ResumeController {
     }
     viewResume = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const filePath = `./uploads/` + req.params.filePath;
             const filename = req.params.filePath;
+            const filePath = `./uploads/` + filename;
 
             if (!filePath) {
                 throw new HttpException(400, "Incorrect filepath", "BAD REQUEST");
