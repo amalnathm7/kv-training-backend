@@ -265,6 +265,57 @@ describe("Application Service Test", () => {
             expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).not.toThrowError();
         });
     
+        test("Success case without opening ID given", async() => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({
+                    opening: {
+                        id: '1'
+                    },
+                    address: {
+                        addressLine1: "line 1",
+                        addressLine2: "line 2",
+                        city: "city",
+                        state: "state",
+                        pincode: "pincode"
+                    },
+                });
+            applicationService.getApplicationById = mockFunction1;
+    
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({permissionLevel: PermissionLevel.SUPER});
+            roleService.getRole = mockFunction2;
+   
+            const mockFunction4 = jest.fn();
+            mockFunction4.mockResolvedValueOnce({id: "1", count: 3, department: { id: "1" }, role: { id: "1" }})
+            openingService.getOpeningById = mockFunction4;
+    
+            const mockFunction5 = jest.fn();
+            mockFunction5.mockResolvedValueOnce({id: "1"})
+            candidateRepository.saveCandidate = mockFunction5;
+    
+            const mockFunction6 = jest.fn();
+            mockFunction6.mockResolvedValueOnce({})
+            openingService.updateOpening = mockFunction6;
+    
+            const updateApplicationDto = plainToInstance(UpdateApplicationDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "status",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1"
+            });
+            expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).not.toThrowError();
+        });
+    
         test("Failure case with HIRED status and opening.count as 0", async() => {
             const mockFunction1 = jest.fn();
             mockFunction1.mockResolvedValueOnce({

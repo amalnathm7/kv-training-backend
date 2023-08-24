@@ -114,9 +114,6 @@ class EmployeeService {
             throw new HttpException(401, "Incorrect email or password", "UNAUTHORIZED");
         }
 
-        console.log(loginEmployeeDto.password);
-        console.log(employee.password);
-
         const result = await bcrypt.compare(loginEmployeeDto.password, employee.password);
         if (!result) {
             throw new HttpException(401, "Incorrect email or password", "UNAUTHORIZED");
