@@ -7,6 +7,7 @@ import { ResponseWithLog } from "../utils/response.with.log";
 import { JsonResponseUtil } from "../utils/json.response.util";
 import OpeningService from "../service/opening.service";
 import CreateOpeningDto from "../dto/create-opening.dto";
+import { RequestWithUser } from "../utils/request.with.user";
 
 class OpeningController {
     public router: express.Router;
@@ -14,14 +15,27 @@ class OpeningController {
     constructor(private openingService: OpeningService) {
         this.router = express.Router();
         this.router.post("/", authenticate, superAuthorize, validateMiddleware(CreateOpeningDto), this.createOpening);
-        this.router.get("/", this.getAllOpenings);
+        this.router.get("/", authenticate, authorize, this.getAllOpenings);
+        this.router.get("/public", this.getAllOpeningsPublic);
         this.router.get("/:id", this.getOpeningById);
         this.router.put("/:id", authenticate, superAuthorize, validateMiddleware(CreateOpeningDto), this.setOpening);
         this.router.patch("/:id", authenticate, superAuthorize, validateMiddleware(UpdateOpeningDto), this.updateOpening);
         this.router.delete("/:id", authenticate,superAuthorize, this.deleteOpening);
     }
 
-    getAllOpenings = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
+    getAllOpenings = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
+        try {
+            const offset = Number(req.query.offset ? req.query.offset : 0);
+            const pageLength = Number(req.query.length ? req.query.length : 10);
+            const roleId = req.role;
+            const openings = await this.openingService.getAllOpenings(offset, pageLength, roleId);
+            JsonResponseUtil.sendJsonResponse200(res, openings);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    getAllOpeningsPublic = async (req: express.Request, res: ResponseWithLog, next: NextFunction) => {
         try {
             const offset = Number(req.query.offset ? req.query.offset : 0);
             const pageLength = Number(req.query.length ? req.query.length : 10);
