@@ -39,14 +39,14 @@ describe("Application Service Test", () => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([ {id:1} ]);
             candidateRepository.findAllApplications = mockFunction;
-            const referral = await applicationService.getAllApplications(0, 10, "email", "role", "");
+            const referral = await applicationService.getAllApplications(0, 10, "email", "role", CandidateStatus.RECEIVED, "");
             expect(referral).toStrictEqual([ {id:1} ]);
         });
         test("Success case With Opening ID", async() => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([ {id:1} ]);
             candidateRepository.findAllApplications = mockFunction;
-            const referral = await applicationService.getAllApplications(0, 10, "email", "role", "");
+            const referral = await applicationService.getAllApplications(0, 10, "email", "role",  CandidateStatus.RECEIVED, "");
             expect(referral).toStrictEqual([ {id:1} ]);
         });
     })

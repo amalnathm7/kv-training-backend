@@ -9,6 +9,7 @@ import CreateReferralDto from "../dto/create-referral.dto";
 import UpdateReferralDto from "../dto/update-referral.dto";
 import ReferralService from "../service/referral.service";
 import SetReferralDto from "../dto/set-referral.dto";
+import { CandidateStatus } from "../utils/status.enum";
 
 class ReferralController {
     public router: express.Router;
@@ -39,8 +40,9 @@ class ReferralController {
             const pageLength = Number(req.query.length ?? 0);
             const role = (req.query.role ?? '') as string;
             const email = (req.query.email ?? '') as string;
+            const status = CandidateStatus[(req.query.status ?? '').toString().replace(' ', '_').toUpperCase()];
             const openingId = (req.query.openingId ?? '') as string;
-            const referrals = await this.referralService.getAllReferrals(offset, pageLength, email, role, openingId);
+            const referrals = await this.referralService.getAllReferrals(offset, pageLength, email, role, status, openingId);
             referrals.push(offset);
             JsonResponseUtil.sendJsonResponse200(res, referrals);
         } catch (error) {

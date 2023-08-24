@@ -7,12 +7,12 @@ export enum EmployeeStatus {
 export enum CandidateStatus {
     RECEIVED = "Received",
     REVIEW = "Review",
-    ROUND1 = "Round 1",
-    ROUND2 = "Round 2",
-    ROUND3 = "Round 3",
+    ROUND_1 = "Round 1",
+    ROUND_2 = "Round 2",
+    ROUND_3 = "Round 3",
     OFFERED = "Offered",
-    ACCEPTED = "Offer Accepted",
-    DECLINED = "Offer Declined",
+    OFFER_ACCEPTED = "Offer Accepted",
+    OFFER_DECLINED = "Offer Declined",
     REJECTED = "Rejected",
     HIRED = "Hired"
 }

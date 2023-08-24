@@ -39,14 +39,14 @@ describe("Referral Service Test", () => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([{ id: 1 }]);
             candidateRepository.findAllReferrals = mockFunction;
-            const referral = await referralService.getAllReferrals(0, 10, "email", "role", '');
+            const referral = await referralService.getAllReferrals(0, 10, "email", "role", CandidateStatus.RECEIVED, '');
             expect(referral).toStrictEqual([{ id: 1 }]);
         });
         test("Success case With Opening ID", async () => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([{ id: 1 }]);
             candidateRepository.findAllReferrals = mockFunction;
-            const referral = await referralService.getAllReferrals(0, 10, "email", "role", '1');
+            const referral = await referralService.getAllReferrals(0, 10, "email", "role", CandidateStatus.RECEIVED, '1');
             expect(referral).toStrictEqual([{ id: 1 }]);
         });
     })
@@ -236,7 +236,7 @@ describe("Referral Service Test", () => {
 
         test('Failure case: Candidate moved to further stages', async () => {
             const mockFunction1 = jest.fn();
-            mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.ROUND1, referredBy: { email: "email" } });
+            mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.ROUND_1, referredBy: { email: "email" } });
             referralService.getReferralById = mockFunction1;
 
             const mockFunction2 = jest.fn();

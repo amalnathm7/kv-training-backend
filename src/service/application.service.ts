@@ -22,12 +22,13 @@ class ApplicationService {
         private roleService: RoleService
     ) { }
 
-    getAllApplications(offset: number, pageLength: number, email: string, role: string, openingId: string): Promise<[Candidate[], number]> {
+    getAllApplications(offset: number, pageLength: number, email: string, role: string, status: CandidateStatus, openingId: string): Promise<[Candidate[], number]> {
         const whereClause: FindOptionsWhere<Candidate> = {
             email: ILike(`%${email}%`),
             role: {
                 role: ILike(`%${role}%`)
             },
+            status,
             opening: {
                 id: openingId || null
             }
