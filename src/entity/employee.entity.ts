@@ -41,8 +41,7 @@ class Employee extends AbstractEntity {
     @JoinColumn()
     address: Address;
 
-    @OneToOne(() => Employee, (employee) => employee.referredBy)
-    @JoinColumn()
+    @ManyToOne(() => Employee, (employee) => employee.referredBy)
     referredBy: Employee;
 
     @OneToMany(() => Candidate, (referral) => referral.referredBy)

@@ -104,6 +104,9 @@ class ReferralService {
 
     async deleteReferral(id: string, roleId: string, email: string): Promise<void> {
         const referral = await this.getReferralById(id);
+        if (referral.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Referral already Hired", "Forbidden");
+        }
         const role = await this.roleService.getRole(roleId);
 
         if (referral.referredBy.email !== email && role.permissionLevel !== PermissionLevel.SUPER) {
@@ -119,6 +122,9 @@ class ReferralService {
 
     async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<Employee | null> {
         const referral = await this.getReferralById(id);
+        if (referral.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Referral already Hired", "Forbidden");
+        }
         const role = await this.roleService.getRole(roleId);
         let employee: Employee = null;
 
@@ -158,7 +164,7 @@ class ReferralService {
         }
 
         if (role.permissionLevel === PermissionLevel.SUPER) {
-            if (referral.status !== CandidateStatus.HIRED && updateReferralDto.status === CandidateStatus.HIRED) {
+            if (updateReferralDto.status === CandidateStatus.HIRED) {
                 if (opening.count <= 0) {
                     throw new HttpException(403, "No more openings available for this position", "Forbidden");
                 }

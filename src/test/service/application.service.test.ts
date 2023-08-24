@@ -171,6 +171,14 @@ describe("Application Service Test", () => {
 
             expect(applicationService.deleteApplication("1")).resolves.not.toThrowError();
         });
+
+        test('Failure case when application already hired', async () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.HIRED });
+            applicationService.getApplicationById = mockFunction1;
+
+            expect(applicationService.deleteApplication("1")).rejects.toThrow(HttpException);
+        });
     });
 
     describe("Update Application", () => {
@@ -320,6 +328,31 @@ describe("Application Service Test", () => {
                 openingId: "1",
             });
             expect(async() => await applicationService.updateApplication("1", updateApplicationDto)).rejects.toThrowError(HttpException);
+        });
+
+        test('Failure case when application already hired', async () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ status: CandidateStatus.HIRED });
+            applicationService.getApplicationById = mockFunction1;
+
+            const updateApplicationDto = plainToInstance(UpdateApplicationDto,{
+                name: "name",
+                email: "email",
+                experience: 1,
+                phone: "phone",
+                resume: "resume",
+                status: "Hired",
+                address: {
+                    addressLine1: "line 1",
+                    addressLine2: "line 2",
+                    city: "city",
+                    state: "state",
+                    pincode: "pincode"
+                },
+                roleId: "1",
+                openingId: "1",
+            });
+            expect(applicationService.updateApplication("1", updateApplicationDto)).rejects.toThrow(HttpException);
         });
     });
 });

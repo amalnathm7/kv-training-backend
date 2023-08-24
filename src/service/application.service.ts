@@ -85,6 +85,9 @@ class ApplicationService {
 
     async deleteApplication(id: string): Promise<void> {
         const application = await this.getApplicationById(id);
+        if (application.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Application already Hired", "Forbidden");
+        }
 
         this.candidateRepository.deleteCandidate(application);
     }
@@ -92,6 +95,9 @@ class ApplicationService {
     async updateApplication(id: string, updateApplicationDto: UpdateApplicationDto): Promise<Employee | null> {
         let employee: Employee = null;
         const application = await this.getApplicationById(id);
+        if (application.status === CandidateStatus.HIRED) {
+            throw new HttpException(403, "Application already Hired", "Forbidden");
+        }
 
         application.name = updateApplicationDto.name;
         application.email = updateApplicationDto.email;
@@ -119,7 +125,7 @@ class ApplicationService {
             application.address.pincode = updateApplicationDto.address.pincode;
         }
 
-        if (application.status !== CandidateStatus.HIRED && updateApplicationDto.status === CandidateStatus.HIRED) {
+        if (updateApplicationDto.status === CandidateStatus.HIRED) {
             if (opening.count <= 0) {
                 throw new HttpException(403, "No more openings available for this position", "Forbidden");
             }
