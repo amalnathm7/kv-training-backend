@@ -1,11 +1,12 @@
-import { Repository } from "typeorm";
+import { FindOptionsWhere, Repository } from "typeorm";
 import Opening from "../entity/opening.entity";
 
 class OpeningRepository {
     constructor(private openingRepository: Repository<Opening>) { }
 
-    findAllOpenings(offset: number, pageLength: number): Promise<[Opening[], number]> {
+    findAllOpenings(offset: number, pageLength: number, where?: FindOptionsWhere<Opening>): Promise<[Opening[], number]> {
         return this.openingRepository.findAndCount({
+            where,
             order: {
                 createdAt: "asc",
             },

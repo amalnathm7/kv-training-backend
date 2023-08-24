@@ -11,6 +11,7 @@ import Role from "../../entity/role.entity";
 import { plainToInstance } from "class-transformer";
 import CreateOpeningDto from "../../dto/create-opening.dto";
 import UpdateOpeningDto from "../../dto/update-opening.dto";
+import { PermissionLevel } from "../../utils/permission.level.enum";
 describe("Opening Service Test", () => {
   let openingService: OpeningService;
   let openingRepository: OpeningRepository;
@@ -28,12 +29,42 @@ describe("Opening Service Test", () => {
       roleService
     );
   });
-  describe("getAllOpenings", () => {
+  describe("getAllOpenings by public user", () => {
     test("Success case", async () => {
       const mockFunction = jest.fn();
       mockFunction.mockResolvedValueOnce([{ id: 1, title: "Title" }]);
       openingRepository.findAllOpenings = mockFunction;
       const opening = await openingService.getAllOpenings(0, 10);
+      expect(opening).toStrictEqual([{ id: 1, title: "Title" }]);
+    });
+    test("Success case by non super user", async () => {
+      const mockFunction = jest.fn();
+      mockFunction.mockResolvedValueOnce([{ id: 1, title: "Title" }]);
+      openingRepository.findAllOpenings = mockFunction;
+
+      const mockFunction2 = jest.fn();
+      const role = new Role;
+      role.id = "1";
+      role.permissionLevel = PermissionLevel.ADVANCED;
+      mockFunction2.mockResolvedValueOnce(role)
+      roleService.getRole = mockFunction2;
+
+      const opening = await openingService.getAllOpenings(0, 10, role.id);
+      expect(opening).toStrictEqual([{ id: 1, title: "Title" }]);
+    });
+    test("Success case by super user", async () => {
+      const mockFunction = jest.fn();
+      mockFunction.mockResolvedValueOnce([{ id: 1, title: "Title" }]);
+      openingRepository.findAllOpenings = mockFunction;
+
+      const mockFunction2 = jest.fn();
+      const role = new Role;
+      role.id = "2";
+      role.permissionLevel = PermissionLevel.SUPER;
+      mockFunction2.mockResolvedValueOnce(role)
+      roleService.getRole = mockFunction2;
+
+      const opening = await openingService.getAllOpenings(0, 10, role.id);
       expect(opening).toStrictEqual([{ id: 1, title: "Title" }]);
     });
     test("Empty Opening case", async () => {

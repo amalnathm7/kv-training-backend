@@ -1,3 +1,4 @@
+import { FindOptionsWhere, MoreThan } from "typeorm";
 import CreateOpeningDto from "../dto/create-opening.dto";
 import UpdateOpeningDto from "../dto/update-opening.dto";
 import Opening from "../entity/opening.entity";
@@ -5,6 +6,7 @@ import HttpException from "../exception/http.exception";
 import OpeningRepository from "../repository/opening.repository";
 import DepartmentService from "./department.service";
 import RoleService from "./role.service";
+import { PermissionLevel } from "../utils/permission.level.enum";
 
 class OpeningService {
   constructor(
@@ -13,8 +15,17 @@ class OpeningService {
     private roleService: RoleService,
   ) { }
 
-  getAllOpenings(offset: number, pageLength: number): Promise<[Opening[], number]> {
-    return this.openingRepository.findAllOpenings(offset, pageLength);
+  async getAllOpenings(offset: number, pageLength: number, roleId?: string): Promise<[Opening[], number]> {
+    if (roleId) {
+      const role = await this.roleService.getRole(roleId);
+      if (role.permissionLevel === PermissionLevel.SUPER) {
+        return this.openingRepository.findAllOpenings(offset, pageLength);
+      }
+    }
+    const whereClause: FindOptionsWhere<Opening> = {
+      count: MoreThan(0)
+    };
+    return this.openingRepository.findAllOpenings(offset, pageLength, whereClause);
   }
 
   async getOpeningById(id: string): Promise<Opening | null> {
