@@ -124,7 +124,7 @@ class ReferralService {
     async updateReferral(id: string, roleId: string, email: string, updateReferralDto: UpdateReferralDto): Promise<Employee | null> {
         const referral = await this.getReferralById(id);
         if (referral.status === CandidateStatus.HIRED) {
-            throw new HttpException(403, "Referral already Hired", "Forbidden");
+            throw new HttpException(403, "Referral already hired", "Forbidden");
         }
         const role = await this.roleService.getRole(roleId);
         let employee: Employee = null;

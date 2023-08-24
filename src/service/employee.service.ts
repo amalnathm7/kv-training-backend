@@ -80,7 +80,7 @@ class EmployeeService {
         newEmployee.password = await bcrypt.hash(email, 10);
         newEmployee.joiningDate = (new Date()).toString();
         newEmployee.experience = experience;
-        newEmployee.status = EmployeeStatus.ACTIVE
+        newEmployee.status = EmployeeStatus.PROBATION
         newEmployee.address = candidate.address;
         newEmployee.role = role;
         newEmployee.department = department;
