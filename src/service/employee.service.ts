@@ -22,6 +22,10 @@ class EmployeeService {
         return this.employeeRepository.findAllEmployees(offset, pageLength);
     }
 
+    getAllEmployeesEmployedFor3Months(): Promise<Employee[]> {
+        return this.employeeRepository.findAllEmployeesEmployedFor3Months();
+    }
+
     async getEmployeeById(id: string): Promise<Employee | null> {
         const employee = await this.employeeRepository.findEmployeeById(id);
         if (!employee) {
@@ -78,7 +82,8 @@ class EmployeeService {
         newEmployee.email = email;
         newEmployee.phone = phone;
         newEmployee.password = await bcrypt.hash(email, 10);
-        newEmployee.joiningDate = (new Date()).toString();
+        const currentDate = new Date();
+        newEmployee.joiningDate = currentDate.toISOString();
         newEmployee.experience = experience;
         newEmployee.status = EmployeeStatus.PROBATION
         newEmployee.address = candidate.address;

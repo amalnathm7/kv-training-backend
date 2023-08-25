@@ -4,7 +4,7 @@ import { AbstractEntity } from "./abstract.entity";
 import Role from "./role.entity";
 import Employee from "./employee.entity";
 import Opening from "./opening.entity";
-import { CandidateStatus } from "../utils/status.enum";
+import { BonusStatus, CandidateStatus } from "../utils/status.enum";
 
 @Entity()
 class Candidate extends AbstractEntity {
@@ -41,6 +41,9 @@ class Candidate extends AbstractEntity {
 
     @Column({ length: 6, default: () => "nanoid(6)", unique: true })
     candidateCode: string;
+
+    @Column({ default: BonusStatus.INACTIVE })
+    bonusStatus: BonusStatus;
 }
 
 export default Candidate;

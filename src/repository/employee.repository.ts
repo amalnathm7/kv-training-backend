@@ -19,6 +19,18 @@ class EmployeeRepository {
         });
     }
 
+    findAllEmployeesEmployedFor3Months(): Promise<Employee[]> {
+        const currentDate = new Date();
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+
+        return this.employeeRepository
+          .createQueryBuilder('employees')
+          .where("employees.referred_by_id IS NOT NULL", { threeMonthsAgo })
+          .andWhere("employees.joiningDate <= :threeMonthsAgo", { threeMonthsAgo })
+          .getMany();
+    }
+
     findEmployeeById(id: string): Promise<Employee | null> {
         return this.employeeRepository.findOne({
             where: { id },

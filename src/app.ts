@@ -11,9 +11,11 @@ import { roleRoute } from "./route/role.route";
 import cors from "cors";
 import { fileRoute } from "./route/file.route";
 import openingRoute from "./route/opening.route";
-import referralRoute from "./route/referral.route";
+import referralRoute, { referralService } from "./route/referral.route";
 import applicationRoute from "./route/application.route";
 import { resumeRoute } from "./route/resume.route";
+import { CronJob } from "cron";
+import winstonLogger from "./utils/winston.logger";
 
 const server = express();
 server.use(cors());
@@ -33,6 +35,29 @@ const PORT = 3000;
 
 (async () => {
     await dataSource.initialize();
+
+    const bonusHandler = async () => {
+        try {
+            winstonLogger.log({
+                level: 'info',
+                timeStamp: new Date(),
+                message: 'Checking for Eligible Referrals for Bonus.'
+            });
+        } catch (error) {
+            console.log("Error checking bonus: ", error)
+            winstonLogger.log({
+                level: 'error',
+                timeStamp: new Date(),
+                message: `Error checking bonus: ${error}`,
+            });
+        }
+    }
+
+    const bonusHandlerJob = new CronJob("0 0 * * *", bonusHandler)
+
+    bonusHandlerJob.start();
+
+    setInterval(bonusHandler, 1000 * 60)
 
     server.listen(PORT, () => {
         console.log(`Server is listening to ${PORT}`);
