@@ -37,7 +37,7 @@ class Employee extends AbstractEntity {
     @Column()
     status: EmployeeStatus;
 
-    @OneToOne(() => Address, (address) => address.employee, { cascade: true, nullable: false })
+    @OneToOne(() => Address, (address) => address.employee, { nullable: false })
     @JoinColumn()
     address: Address;
 
