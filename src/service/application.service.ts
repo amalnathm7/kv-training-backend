@@ -3,16 +3,17 @@ import HttpException from "../exception/http.exception";
 import RoleService from "./role.service";
 import Candidate from "../entity/candidate.entity";
 import OpeningService from "../service/opening.service";
-import { CandidateStatus, EmployeeStatus } from "../utils/status.enum";
+import { CandidateStatus } from "../utils/status.enum";
 import { compareDateMonts } from "../utils/date.util";
 import CreateApplicationDto from "../dto/create-application.dto";
 import CandidateRepository from "../repository/candidate.repository";
 import { FindOptionsWhere, ILike } from "typeorm";
 import UpdateApplicationDto from "../dto/update-application.dto";
 import UpdateOpeningDto from "../dto/update-opening.dto";
-import CreateEmployeeDto from "../dto/create-employee.dto";
+import nodemailer from 'nodemailer';
 import EmployeeService from "./employee.service";
 import Employee from "../entity/employee.entity";
+import winstonLogger from "../utils/winston.logger";
 
 class ApplicationService {
     constructor(
@@ -81,7 +82,47 @@ class ApplicationService {
         newAddress.pincode = address.pincode;
         newApplication.address = newAddress;
 
-        return this.candidateRepository.saveCandidate(newApplication);
+        const candidate = this.candidateRepository.saveCandidate(newApplication);
+
+        candidate.then(async (candidate) => {
+            if (candidate.id) {
+                const jobLink = `${process.env.FRONTEND_URL}/application/${candidate.id}`;
+                const myEmail = process.env.MY_EMAIL;
+                const myPass = process.env.MY_PASS;
+
+                const transporter = nodemailer.createTransport({
+                    service: 'Gmail',
+                    auth: {
+                        user: myEmail,
+                        pass: myPass
+                    }
+                });
+
+                const mailOptions = {
+                    from: myEmail,
+                    to: candidate.email,
+                    subject: 'Application for job opening at KeyValue',
+                    text: `Here is the link to your application for the job opening you applied at KeyValue: ${jobLink}`,
+                };
+
+                try {
+                    await transporter.sendMail(mailOptions);
+                    winstonLogger.log({
+                        level: 'info',
+                        timeStamp: new Date(),
+                        message: `Email sent to ${candidate.email}`,
+                    });
+                } catch (error) {
+                    winstonLogger.log({
+                        level: 'error',
+                        timeStamp: new Date(),
+                        message: `Email to ${candidate.email} failed due to ${error}`,
+                    });
+                }
+            }
+        });
+
+        return candidate;
     }
 
     async deleteApplication(id: string): Promise<void> {
@@ -130,7 +171,7 @@ class ApplicationService {
             if (opening.count <= 0) {
                 throw new HttpException(403, "No more openings available for this position", "Forbidden");
             }
-            const openingUpdateDto: UpdateOpeningDto = {...opening, departmentId: opening.department.id, roleId: opening.role.id}
+            const openingUpdateDto: UpdateOpeningDto = { ...opening, departmentId: opening.department.id, roleId: opening.role.id }
             openingUpdateDto.count--;
             await this.openingService.updateOpening(opening.id, openingUpdateDto);
 

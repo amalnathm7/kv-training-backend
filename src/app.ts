@@ -11,7 +11,7 @@ import { roleRoute } from "./route/role.route";
 import cors from "cors";
 import { fileRoute } from "./route/file.route";
 import openingRoute from "./route/opening.route";
-import referralRoute, { referralService } from "./route/referral.route";
+import referralRoute from "./route/referral.route";
 import applicationRoute from "./route/application.route";
 import { resumeRoute } from "./route/resume.route";
 import { CronJob } from "cron";
