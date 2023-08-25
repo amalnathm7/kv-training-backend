@@ -29,7 +29,7 @@ class Candidate extends AbstractEntity {
     @ManyToOne(() => Employee, {nullable: true})
     referredBy: Employee;
 
-    @OneToOne(() => Address, (address) => address.employee, { nullable: false })
+    @OneToOne(() => Address, (address) => address.employee, { cascade: [ "insert", "update"], nullable: false })
     @JoinColumn()
     address: Address;
 
