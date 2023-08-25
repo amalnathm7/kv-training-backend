@@ -24,13 +24,14 @@ class ReferralService {
         private roleService: RoleService
     ) { }
 
-    getAllReferrals(offset: number, pageLength: number, email: string, role: string, status: CandidateStatus, openingId: string): Promise<[Candidate[], number]> {
+    getAllReferrals(offset: number, pageLength: number, email: string, role: string, status: CandidateStatus, bonusStatus: BonusStatus, openingId: string): Promise<[Candidate[], number]> {
         const whereClause: FindOptionsWhere<Candidate> = {
             email: ILike(`%${email}%`),
             role: {
                 role: ILike(`%${role}%`)
             },
             status,
+            bonusStatus,
             opening: {
                 id: openingId || null
             }

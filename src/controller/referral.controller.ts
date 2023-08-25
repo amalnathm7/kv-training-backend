@@ -9,7 +9,7 @@ import CreateReferralDto from "../dto/create-referral.dto";
 import UpdateReferralDto from "../dto/update-referral.dto";
 import ReferralService from "../service/referral.service";
 import SetReferralDto from "../dto/set-referral.dto";
-import { CandidateStatus } from "../utils/status.enum";
+import { BonusStatus, CandidateStatus } from "../utils/status.enum";
 import UpdateReferralBonusDto from "../dto/update-referral-bonus.dto";
 
 class ReferralController {
@@ -43,8 +43,9 @@ class ReferralController {
             const role = (req.query.role ?? '') as string;
             const email = (req.query.email ?? '') as string;
             const status = CandidateStatus[(req.query.status ?? '').toString().replace(' ', '_').toUpperCase()];
+            const bonusStatus = BonusStatus[(req.query.bonusStatus ?? '').toString().toUpperCase()];
             const openingId = (req.query.openingId ?? '') as string;
-            const referrals = await this.referralService.getAllReferrals(offset, pageLength, email, role, status, openingId);
+            const referrals = await this.referralService.getAllReferrals(offset, pageLength, email, role, status, bonusStatus, openingId);
             referrals.push(offset);
             JsonResponseUtil.sendJsonResponse200(res, referrals);
         } catch (error) {

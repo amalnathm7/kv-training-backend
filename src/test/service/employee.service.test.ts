@@ -63,6 +63,24 @@ describe('Employee Service Test', () => {
             const employees = await employeeService.getAllEmployees(0, 10);
             expect(employees).toStrictEqual([]);
         });
+    }); 
+
+    describe('getAllEmployeesEmployedFor3Months', () => {
+        test('Success case', async () => {
+            const mockFunction = jest.fn();
+            mockFunction.mockResolvedValueOnce([{ id: 1, name: "Name" }]);
+            employeeRepository.findAllEmployeesEmployedFor3Months = mockFunction;
+            const employee = await employeeService.getAllEmployeesEmployedFor3Months();
+            expect(employee).toStrictEqual([{ id: 1, name: "Name" }]);
+        });
+
+        test('Empty result case', async () => {
+            const mockFunction = jest.fn();
+            mockFunction.mockResolvedValueOnce([]);
+            employeeRepository.findAllEmployeesEmployedFor3Months = mockFunction;
+            const employees = await employeeService.getAllEmployeesEmployedFor3Months();
+            expect(employees).toStrictEqual([]);
+        });
     });
 
     describe('getEmployeeByEmail', () => {
