@@ -4,11 +4,11 @@ import { ValidateDto } from "./validate.dto";
 class CreateAddressDto implements ValidateDto {
     @IsNotEmpty()
     @IsString()
-    addressLine1: string;
-    
+    line1: string;
+
     @IsNotEmpty()
     @IsString()
-    addressLine2: string;
+    line2: string;
 
     @IsNotEmpty()
     @IsString()

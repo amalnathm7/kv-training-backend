@@ -4,11 +4,11 @@ import { ValidateDto } from "./validate.dto";
 class UpdateAddressDto implements ValidateDto {
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
-    addressLine1: string;
+    line1: string;
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
-    addressLine2: string;
+    line2: string;
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()

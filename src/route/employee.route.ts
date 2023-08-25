@@ -11,4 +11,5 @@ const employeeService = new EmployeeService(employeeRepository, departmentServic
 const employeeController = new EmployeeController(employeeService);
 const employeeRoute = employeeController.router;
 
+export { employeeService };
 export default employeeRoute;

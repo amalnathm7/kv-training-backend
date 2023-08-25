@@ -27,7 +27,7 @@ class EmployeeController {
 
     getProfile = async (req: RequestWithUser, res: ResponseWithLog, next: NextFunction) => {
         try {
-            const profile = await this.employeeService.getEmployeeByUsername(req.username);
+            const profile = await this.employeeService.getEmployeeByEmail(req.email);
             JsonResponseUtil.sendJsonResponse200(res, profile);
         } catch (error) {
             next(error);
@@ -50,8 +50,8 @@ class EmployeeController {
             const employees = await this.employeeService.getAllEmployees(offset, pageLength);
             employees.push(offset);
             JsonResponseUtil.sendJsonResponse200(res, employees);
-        } catch (e) {
-            next(e);
+        } catch (error) {
+            next(error);
         }
     }
 

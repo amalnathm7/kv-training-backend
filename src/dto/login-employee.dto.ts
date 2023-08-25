@@ -4,7 +4,7 @@ import { ValidateDto } from "./validate.dto";
 class LoginEmployeeDto implements ValidateDto  {
     @IsNotEmpty()
     @IsString()
-    username: string;
+    email: string;
 
     @IsNotEmpty()
     @IsString()
