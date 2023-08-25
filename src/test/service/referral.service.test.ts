@@ -13,7 +13,10 @@ import { openingService } from '../../route/opening.route';
 import { roleService } from "../../route/role.route";
 import { PermissionLevel } from '../../utils/permission.level.enum';
 import UpdateReferralDto from '../../dto/update-referral.dto';
-import { CandidateStatus } from '../../utils/status.enum';
+import { BonusStatus, CandidateStatus } from '../../utils/status.enum';
+import UpdateReferralBonusDto from '../../dto/update-referral-bonus.dto';
+import { when } from 'jest-when';
+import winstonLogger from '../../utils/winston.logger';
 
 describe("Referral Service Test", () => {
     let referralService: ReferralService;
@@ -39,14 +42,14 @@ describe("Referral Service Test", () => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([{ id: 1 }]);
             candidateRepository.findAllReferrals = mockFunction;
-            const referral = await referralService.getAllReferrals(0, 10, "email", "role", CandidateStatus.RECEIVED, '');
+            const referral = await referralService.getAllReferrals(0, 10, "email", "role", CandidateStatus.RECEIVED, BonusStatus.PROCESSING, '');
             expect(referral).toStrictEqual([{ id: 1 }]);
         });
         test("Success case With Opening ID", async () => {
             const mockFunction = jest.fn();
             mockFunction.mockResolvedValueOnce([{ id: 1 }]);
             candidateRepository.findAllReferrals = mockFunction;
-            const referral = await referralService.getAllReferrals(0, 10, "email", "role", CandidateStatus.RECEIVED, '1');
+            const referral = await referralService.getAllReferrals(0, 10, "email", "role", CandidateStatus.RECEIVED, BonusStatus.PROCESSING, '1');
             expect(referral).toStrictEqual([{ id: 1 }]);
         });
     })
@@ -547,4 +550,152 @@ describe("Referral Service Test", () => {
             expect(referralService.updateReferral("1", "1", "email", updatereferralDto)).rejects.toThrow(HttpException);
         });
     });
+
+    describe("Update Referral Bonus Status", () => {
+        test("When status is inactive", () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.INACTIVE });
+            referralService.getReferralById = mockFunction1;
+
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.INACTIVE });
+            candidateRepository.saveCandidate = mockFunction2;
+
+            const bonusStatusDto: UpdateReferralBonusDto = {
+                bonusStatus: BonusStatus.ELIGIBLE
+            }
+
+            expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).rejects.toThrow(HttpException);
+        })
+
+        test("When status is approved", () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.APPROVED });
+            referralService.getReferralById = mockFunction1;
+
+            const mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.APPROVED });
+            candidateRepository.saveCandidate = mockFunction2;
+
+            const bonusStatusDto: UpdateReferralBonusDto = {
+                bonusStatus: BonusStatus.ELIGIBLE
+            }
+
+            expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).rejects.toThrow(HttpException);
+        })
+
+        describe("When status is processing", () => {
+            let mockFunction1;
+            let mockFunction2;
+            beforeEach(() => {
+                mockFunction1 = jest.fn();
+                mockFunction1.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.PROCESSING });
+                referralService.getReferralById = mockFunction1;
+
+                mockFunction2 = jest.fn();
+                mockFunction2.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.APPROVED });
+                candidateRepository.saveCandidate = mockFunction2;
+            })
+            test("When new status is inactive", async () => {
+                const bonusStatusDto: UpdateReferralBonusDto = {
+                    bonusStatus: BonusStatus.INACTIVE
+                }
+
+                await expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).resolves.not.toThrow();
+                expect(mockFunction2).toBeCalledTimes(1);
+            });
+            test("When new status is processing", () => {
+                const bonusStatusDto: UpdateReferralBonusDto = {
+                    bonusStatus: BonusStatus.PROCESSING
+                }
+
+                expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).rejects.toThrow(HttpException);
+            });
+            test("When new status is eligiblie", async () => {
+                const bonusStatusDto: UpdateReferralBonusDto = {
+                    bonusStatus: BonusStatus.ELIGIBLE
+                }
+
+                await expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).resolves.not.toThrow();
+                expect(mockFunction2).toBeCalledTimes(1);
+            });
+            test("When new status is approved", async () => {
+                const bonusStatusDto: UpdateReferralBonusDto = {
+                    bonusStatus: BonusStatus.APPROVED
+                }
+
+                await expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).resolves.not.toThrow();
+                expect(mockFunction2).toBeCalledTimes(1);
+            });
+
+        })
+        describe("When status is eligible", () => {
+          let mockFunction1;
+          let mockFunction2;
+          beforeEach(() => {
+            mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.ELIGIBLE, });
+            referralService.getReferralById = mockFunction1;
+
+            mockFunction2 = jest.fn();
+            mockFunction2.mockResolvedValueOnce({ id: "1", bonusStatus: BonusStatus.APPROVED, });
+            candidateRepository.saveCandidate = mockFunction2;
+          });
+          test("When new status is inactive", async () => {
+            const bonusStatusDto: UpdateReferralBonusDto = {
+              bonusStatus: BonusStatus.INACTIVE,
+            };
+
+            await expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).resolves.not.toThrow();
+            expect(mockFunction2).toBeCalledTimes(1);
+          });
+          test("When new status is processing", () => {
+            const bonusStatusDto: UpdateReferralBonusDto = {
+              bonusStatus: BonusStatus.PROCESSING,
+            };
+
+            expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).rejects.toThrow(HttpException);
+          });
+          test("When new status is eligiblie", async () => {
+            const bonusStatusDto: UpdateReferralBonusDto = {
+              bonusStatus: BonusStatus.ELIGIBLE,
+            };
+
+            expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).rejects.toThrow(HttpException);
+          });
+          test("When new status is approved", async () => {
+            const bonusStatusDto: UpdateReferralBonusDto = {
+              bonusStatus: BonusStatus.APPROVED,
+            };
+
+            await expect(referralService.updateReferralBonusStatus("1", bonusStatusDto)).resolves.not.toThrow();
+            expect(mockFunction2).toBeCalledTimes(1);
+          });
+        });
+    })
+
+    describe("Check Bonus Elgibility", () => {
+        test("Sucess Case", async () => {
+            const mockFunction1 = jest.fn();
+            mockFunction1.mockResolvedValueOnce([{ email: "email1" }, { email: "email2" }, { email: "email3" }, { email: "email4" } ]);
+            employeeService.getAllEmployeesEmployedFor3Months = mockFunction1;
+
+            const mockFunction2 = jest.fn();
+            when(mockFunction2).calledWith("email1").mockResolvedValueOnce([{ id: "1", status: CandidateStatus.HIRED, bonusStatus: BonusStatus.PROCESSING}]);
+            when(mockFunction2).calledWith("email2").mockResolvedValueOnce([{ id: "2", status: CandidateStatus.HIRED, bonusStatus: BonusStatus.ELIGIBLE}]);
+            when(mockFunction2).calledWith("email3").mockResolvedValueOnce([{ id: "3", status: CandidateStatus.ROUND_1, bonusStatus: BonusStatus.INACTIVE}]);
+            when(mockFunction2).calledWith("email4").mockResolvedValueOnce([{ id: "4", status: CandidateStatus.HIRED, bonusStatus: BonusStatus.PROCESSING}]);
+            referralService.getReferralsByEmail = mockFunction2;
+
+            const mockFunction3 = jest.fn();
+            mockFunction3.mockResolvedValue({});
+            referralService.updateReferralBonusStatus = mockFunction3;
+
+            const mockFunction4 = jest.fn();
+            winstonLogger.log = mockFunction4;
+
+            await expect(referralService.checkBonusEligibility()).resolves.not.toThrow();
+            expect(mockFunction3).toBeCalledTimes(2);
+        })
+    })
 });
