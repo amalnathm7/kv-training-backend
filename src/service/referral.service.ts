@@ -107,7 +107,7 @@ class ReferralService {
     async deleteReferral(id: string, roleId: string, email: string): Promise<void> {
         const referral = await this.getReferralById(id);
         if (referral.status === CandidateStatus.HIRED) {
-            throw new HttpException(403, "Referral already Hired", "Forbidden");
+            throw new HttpException(403, "Referral already hired", "Forbidden");
         }
         const role = await this.roleService.getRole(roleId);
 
@@ -196,14 +196,14 @@ class ReferralService {
             }
             case BonusStatus.PROCESSING: {
                 if (bonusStatus !== BonusStatus.ELIGIBLE && bonusStatus !== BonusStatus.INACTIVE && bonusStatus !== BonusStatus.APPROVED) {
-                    throw new HttpException(403, "Invalid new Bonus Status", "Forbidden");
+                    throw new HttpException(403, "Invalid new bonus status", "Forbidden");
                 }
                 referral.bonusStatus = bonusStatus;
                 break;
             }
             case BonusStatus.ELIGIBLE: {
                 if (bonusStatus !== BonusStatus.APPROVED && bonusStatus !== BonusStatus.INACTIVE) {
-                    throw new HttpException(403, "Invalid new Bonus Status", "Forbidden");
+                    throw new HttpException(403, "Invalid new bonus status", "Forbidden");
                 }
                 referral.bonusStatus = bonusStatus;
                 break;

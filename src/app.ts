@@ -44,7 +44,6 @@ const PORT = 3000;
                 message: 'Checking for Eligible Referrals for Bonus.'
             });
         } catch (error) {
-            console.log("Error checking bonus: ", error)
             winstonLogger.log({
                 level: 'error',
                 timeStamp: new Date(),
@@ -56,8 +55,6 @@ const PORT = 3000;
     const bonusHandlerJob = new CronJob("0 0 * * *", bonusHandler)
 
     bonusHandlerJob.start();
-
-    setInterval(bonusHandler, 1000 * 60)
 
     server.listen(PORT, () => {
         console.log(`Server is listening to ${PORT}`);
