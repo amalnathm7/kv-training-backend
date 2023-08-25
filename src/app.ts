@@ -41,11 +41,15 @@ const PORT = 3000;
             winstonLogger.log({
                 level: 'info',
                 timeStamp: new Date(),
-                message: 'Checking for Eligible Referrals for Bonus.',
+                message: 'Checking for Eligible Referrals for Bonus.'
             });
-            await referralService.checkBonusEligibility();
         } catch (error) {
             console.log("Error checking bonus: ", error)
+            winstonLogger.log({
+                level: 'error',
+                timeStamp: new Date(),
+                message: `Error checking bonus: ${error}`,
+            });
         }
     }
 
