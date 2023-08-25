@@ -195,7 +195,7 @@ class ReferralService {
                 throw new HttpException(403, "Referral bonus already approved", "Forbidden");
             }
             case BonusStatus.PROCESSING: {
-                if (bonusStatus !== BonusStatus.ELIGIBLE && bonusStatus !== BonusStatus.INACTIVE) {
+                if (bonusStatus !== BonusStatus.ELIGIBLE && bonusStatus !== BonusStatus.INACTIVE && bonusStatus !== BonusStatus.APPROVED) {
                     throw new HttpException(403, "Invalid new Bonus Status", "Forbidden");
                 }
                 referral.bonusStatus = bonusStatus;
@@ -213,11 +213,6 @@ class ReferralService {
     }
 
     async checkBonusEligibility(): Promise<void> {
-        winstonLogger.log({
-            level: 'info',
-            timeStamp: new Date(),
-            message: 'Checking for Eligible Referrals for Bonus.',
-        });
         const employees = await this.employeeService.getAllEmployeesEmployedFor3Months();
         for (const employee of employees) {
             const referrals = await this.getReferralsByEmail(employee.email);
